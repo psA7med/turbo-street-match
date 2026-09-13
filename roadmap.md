@@ -6,7 +6,9 @@
 - [x] PLP, search, filters and category entry points
 - [x] PDP variants, sizes and gallery
 - [x] Persistent guest cart and checkout interface
-- [ ] Auth, profile, addresses, orders and tracking
-- [ ] Wholesale application, approval and protected portal
+- [x] Auth, account summary and order history
+- [ ] Profile editing, addresses and detailed order tracking
+- [x] Protected wholesale application and application status
+- [ ] Wholesale approval administration and approved dealer portal
 - [ ] Admin/CMS architecture and core management screens
 - [ ] Responsive, accessibility, performance and security QA
