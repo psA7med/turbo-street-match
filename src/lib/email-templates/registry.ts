@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react'
 import { template as orderNotificationTemplate } from './order-notification'
+import { template as orderConfirmationTemplate } from './order-confirmation'
 
 export interface TemplateEntry {
   component: ComponentType<any>
@@ -20,4 +21,5 @@ export interface TemplateEntry {
  */
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'order-notification': orderNotificationTemplate,
+  'order-confirmation': orderConfirmationTemplate,
 }
