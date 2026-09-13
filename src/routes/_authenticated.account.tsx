@@ -107,7 +107,7 @@ function Page() {
     },
   });
 
-  const { data: wholesale } = useQuery({
+  const { data: accountRole } = useQuery({
     queryKey: ["my-wholesale", user.id],
     queryFn: async () => {
       const [{ data: roles }, { data: application }] = await Promise.all([
@@ -115,10 +115,13 @@ function Page() {
         supabase.from("wholesale_applications").select("status").eq("user_id", user.id).maybeSingle(),
       ]);
       const names = (roles ?? []).map((r) => r.role);
-      if (names.includes("wholesale")) return "approved" as const;
-      return application?.status ?? null;
+      const isAdmin = names.includes("admin") || names.includes("super_admin");
+      const status = names.includes("wholesale") ? ("approved" as const) : application?.status ?? null;
+      return { isAdmin, status };
     },
   });
+  const wholesale = accountRole?.status ?? null;
+  const isAdmin = accountRole?.isAdmin ?? false;
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -206,6 +209,15 @@ function Page() {
       </section>
 
       <div className="turbo-container py-8 sm:py-12">
+        {isAdmin && (
+          <Link to="/admin/wholesale-applications" className="mb-4 flex items-center justify-between gap-4 rounded-[10px] border border-primary bg-primary/5 p-5 transition-colors hover:bg-primary/10">
+            <div className="flex items-center gap-4">
+              <span className="grid size-10 place-items-center rounded-lg bg-primary text-primary-foreground"><ShieldCheck className="size-5"/></span>
+              <div><strong className="block">لوحة الإدارة — طلبات تجار الجملة</strong><p className="mt-1 text-sm text-muted-foreground">راجع الطلبات ووافق أو ارفض</p></div>
+            </div>
+            <ChevronLeft className="size-5 text-primary" aria-hidden="true" />
+          </Link>
+        )}
         <Link to={wholesaleCard.to} className="flex items-center justify-between gap-4 rounded-[10px] border bg-card p-5 transition-colors hover:border-primary">
           <div className="flex items-center gap-4">
             <span className="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"><Store className="size-5"/></span>
