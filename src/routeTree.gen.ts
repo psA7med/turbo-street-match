@@ -10,19 +10,47 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as CartRouteImport } from './routes/cart'
 import { Route as CategoriesRouteImport } from './routes/categories'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as FaqRouteImport } from './routes/faq'
 import { Route as NewRouteImport } from './routes/new'
 import { Route as OffersRouteImport } from './routes/offers'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as ShippingRouteImport } from './routes/shipping'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as SizeGuideRouteImport } from './routes/size-guide'
+import { Route as WholesaleRouteImport } from './routes/wholesale'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CategoriesRoute = CategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NewRoute = NewRouteImport.update({
@@ -35,48 +63,140 @@ const OffersRoute = OffersRouteImport.update({
   path: '/offers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShippingRoute = ShippingRouteImport.update({
+  id: '/shipping',
+  path: '/shipping',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SizeGuideRoute = SizeGuideRouteImport.update({
+  id: '/size-guide',
+  path: '/size-guide',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WholesaleRoute = WholesaleRouteImport.update({
+  id: '/wholesale',
+  path: '/wholesale',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
   '/new': typeof NewRoute
   '/offers': typeof OffersRoute
+  '/search': typeof SearchRoute
+  '/shipping': typeof ShippingRoute
   '/shop': typeof ShopRoute
+  '/size-guide': typeof SizeGuideRoute
+  '/wholesale': typeof WholesaleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
   '/new': typeof NewRoute
   '/offers': typeof OffersRoute
+  '/search': typeof SearchRoute
+  '/shipping': typeof ShippingRoute
   '/shop': typeof ShopRoute
+  '/size-guide': typeof SizeGuideRoute
+  '/wholesale': typeof WholesaleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
   '/new': typeof NewRoute
   '/offers': typeof OffersRoute
+  '/search': typeof SearchRoute
+  '/shipping': typeof ShippingRoute
   '/shop': typeof ShopRoute
+  '/size-guide': typeof SizeGuideRoute
+  '/wholesale': typeof WholesaleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/categories' | '/new' | '/offers' | '/shop'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/cart'
+    | '/categories'
+    | '/contact'
+    | '/faq'
+    | '/new'
+    | '/offers'
+    | '/search'
+    | '/shipping'
+    | '/shop'
+    | '/size-guide'
+    | '/wholesale'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/categories' | '/new' | '/offers' | '/shop'
-  id: '__root__' | '/' | '/categories' | '/new' | '/offers' | '/shop'
+  to:
+    | '/'
+    | '/about'
+    | '/cart'
+    | '/categories'
+    | '/contact'
+    | '/faq'
+    | '/new'
+    | '/offers'
+    | '/search'
+    | '/shipping'
+    | '/shop'
+    | '/size-guide'
+    | '/wholesale'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/cart'
+    | '/categories'
+    | '/contact'
+    | '/faq'
+    | '/new'
+    | '/offers'
+    | '/search'
+    | '/shipping'
+    | '/shop'
+    | '/size-guide'
+    | '/wholesale'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  CartRoute: typeof CartRoute
   CategoriesRoute: typeof CategoriesRoute
+  ContactRoute: typeof ContactRoute
+  FaqRoute: typeof FaqRoute
   NewRoute: typeof NewRoute
   OffersRoute: typeof OffersRoute
+  SearchRoute: typeof SearchRoute
+  ShippingRoute: typeof ShippingRoute
   ShopRoute: typeof ShopRoute
+  SizeGuideRoute: typeof SizeGuideRoute
+  WholesaleRoute: typeof WholesaleRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -88,11 +208,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/categories': {
       id: '/categories'
       path: '/categories'
       fullPath: '/categories'
       preLoaderRoute: typeof CategoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/new': {
@@ -109,6 +257,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OffersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shipping': {
+      id: '/shipping'
+      path: '/shipping'
+      fullPath: '/shipping'
+      preLoaderRoute: typeof ShippingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shop': {
       id: '/shop'
       path: '/shop'
@@ -116,15 +278,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/size-guide': {
+      id: '/size-guide'
+      path: '/size-guide'
+      fullPath: '/size-guide'
+      preLoaderRoute: typeof SizeGuideRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wholesale': {
+      id: '/wholesale'
+      path: '/wholesale'
+      fullPath: '/wholesale'
+      preLoaderRoute: typeof WholesaleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  CartRoute: CartRoute,
   CategoriesRoute: CategoriesRoute,
+  ContactRoute: ContactRoute,
+  FaqRoute: FaqRoute,
   NewRoute: NewRoute,
   OffersRoute: OffersRoute,
+  SearchRoute: SearchRoute,
+  ShippingRoute: ShippingRoute,
   ShopRoute: ShopRoute,
+  SizeGuideRoute: SizeGuideRoute,
+  WholesaleRoute: WholesaleRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
