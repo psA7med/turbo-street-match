@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Heart, ShoppingBag } from "lucide-react";
+import { Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useWishlist } from "@/hooks/use-wishlist";
 import { ProductCard, type CatalogProduct } from "@/components/storefront/catalog";
 
 export const Route = createFileRoute("/wishlist")({
+  head: () => ({ meta: [{ title: "المفضلة — TURBO" }, { name: "description", content: "المنتجات المحفوظة في مفضلة TURBO." }, { property: "og:title", content: "المفضلة — TURBO" }, { property: "og:description", content: "ارجع بسهولة للقطع التي اخترتها." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: WishlistPage,
 });
 
@@ -41,9 +43,7 @@ function WishlistPage() {
           </div>
           <h2 className="text-xl font-bold">مفيش حاجة في المفضلة</h2>
           <p className="mt-2 text-muted-foreground">تقدر تضيف القطع اللي عجبتك هنا عشان ترجعلها تاني بسهولة.</p>
-          <Link to="/shop" className="mt-8 inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
-            تصفح المتجر
-          </Link>
+          <Button asChild className="mt-8"><Link to="/shop">تصفح المتجر</Link></Button>
         </div>
       ) : isLoading ? (
         <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
