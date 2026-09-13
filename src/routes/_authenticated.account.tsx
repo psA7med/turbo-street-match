@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { money } from "@/components/storefront/catalog";
 import { toast } from "sonner";
@@ -166,7 +166,9 @@ function Page() {
       <section className="bg-brand-black text-primary-foreground">
         <div className="turbo-container flex flex-col gap-6 py-9 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-5">
-            <Avatar className="size-20 border-2 border-primary bg-primary-foreground/10"><AvatarImage src={avatarUrl || undefined} alt={displayName}/><AvatarFallback className="bg-primary text-xl font-bold text-primary-foreground">{displayName.slice(0, 2)}</AvatarFallback></Avatar>
+            <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-primary text-xl font-bold text-primary-foreground">
+              {avatarUrl ? <img src={avatarUrl} alt={displayName} className="size-full object-cover" referrerPolicy="no-referrer"/> : <span>{displayName.slice(0, 2)}</span>}
+            </div>
             <div><p className="text-xs font-bold text-primary">MY TURBO</p><h1 className="mt-1 text-3xl font-extrabold sm:text-4xl">أهلاً، {displayName.split(" ")[0]}</h1><p dir="ltr" className="mt-1 text-start text-sm text-primary-foreground/60">{user.email}</p></div>
           </div>
           <Button variant="outline" className="border-primary-foreground/25 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" onClick={signOut}><LogOut /> تسجيل الخروج</Button>
