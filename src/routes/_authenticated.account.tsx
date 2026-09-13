@@ -58,6 +58,33 @@ function Page() {
     },
   });
 
+  // الصور المرفوعة محفوظة في مساحة خاصة، فنولّد لها رابط عرض مؤقت
+  const storedAvatar = profile?.avatar_url ?? "";
+  const { data: signedAvatar = "" } = useQuery({
+    queryKey: ["my-avatar", user.id, storedAvatar],
+    enabled: Boolean(storedAvatar) && !storedAvatar.startsWith("http"),
+    queryFn: async () => {
+      const { data } = await supabase.storage.from("avatars").createSignedUrl(storedAvatar, 60 * 60 * 12);
+      return data?.signedUrl ?? "";
+    },
+  });
+
+  const uploadAvatar = async (file: File) => {
+    if (!file.type.startsWith("image/")) { toast.error("اختار صورة صحيحة"); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error("حجم الصورة أكبر من 5 ميجا"); return; }
+    setUploadingAvatar(true);
+    const extension = (file.name.split(".").pop() || "jpg").toLowerCase();
+    const path = `${user.id}/avatar-${Date.now()}.${extension}`;
+    const { error: uploadError } = await supabase.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type });
+    if (!uploadError) await supabase.from("profiles").upsert({ id: user.id, avatar_url: path });
+    setUploadingAvatar(false);
+    if (uploadError) { toast.error("تعذر رفع الصورة"); return; }
+    await queryClient.invalidateQueries({ queryKey: ["my-profile", user.id] });
+    toast.success("اتغيرت صورتك");
+  };
+
+
+
   const { data: addresses = [], isLoading: addressesLoading } = useQuery({
     queryKey: ["my-addresses", user.id],
     queryFn: async () => {
