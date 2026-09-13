@@ -1,6 +1,15 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+interface ShippingAddress {
+  recipient_name?: string;
+  phone?: string;
+  governorate?: string;
+  city?: string;
+  street_address?: string;
+  landmark?: string | null;
+}
+
 // Sends the new-order notification to the store inbox after an order is
 // placed. Recipient is fixed in the template; never taken from the client.
 export const notifyOrderPlaced = createServerFn({ method: "POST" })
@@ -11,31 +20,33 @@ export const notifyOrderPlaced = createServerFn({ method: "POST" })
 
     const { data: order, error } = await supabaseAdmin
       .from("orders")
-      .select("order_number, customer_name, phone, email, governorate, city, street_address, landmark, subtotal, shipping, total, order_items(product_name, color, size, quantity, line_total)")
+      .select("order_number, guest_email, guest_phone, subtotal, shipping_total, grand_total, shipping_address, order_items(product_name_ar, color_name_ar, size_label, quantity, line_total)")
       .eq("id", data.orderId)
       .single();
     if (error || !order) throw new Error("order_not_found");
 
+    const address = (order.shipping_address ?? {}) as ShippingAddress;
+
     const result = await sendTemplateEmail("order-notification", "turpoclothes@gmail.com", {
       templateData: {
         orderNumber: order.order_number,
-        customerName: order.customer_name,
-        phone: order.phone,
-        email: order.email,
-        governorate: order.governorate,
-        city: order.city,
-        streetAddress: order.street_address,
-        landmark: order.landmark,
+        customerName: address.recipient_name,
+        phone: order.guest_phone ?? address.phone,
+        email: order.guest_email,
+        governorate: address.governorate,
+        city: address.city,
+        streetAddress: address.street_address,
+        landmark: address.landmark ?? undefined,
         items: (order.order_items ?? []).map((item) => ({
-          name: item.product_name,
-          color: item.color,
-          size: item.size,
+          name: item.product_name_ar,
+          color: item.color_name_ar,
+          size: item.size_label,
           quantity: item.quantity,
           total: item.line_total,
         })),
         subtotal: order.subtotal,
-        shipping: order.shipping,
-        total: order.total,
+        shipping: order.shipping_total,
+        total: order.grand_total,
       },
       idempotencyKey: `order-notification-${data.orderId}`,
     });
