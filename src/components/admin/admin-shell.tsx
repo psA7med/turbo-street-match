@@ -32,7 +32,7 @@ const nav = [
   { to: "/admin/shipping", label: "الشحن", icon: Truck },
   { to: "/admin/size-guides", label: "دليل المقاسات", icon: Ruler },
   { to: "/admin/settings", label: "الإعدادات", icon: Settings },
-] as const;
+] as { to: any; label: string; icon: any; exact?: boolean }[];
 
 const titles: Record<string, string> = {
   "/admin": "لوحة التحكم",
