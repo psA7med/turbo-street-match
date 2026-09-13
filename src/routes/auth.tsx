@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { BadgeCheck, LoaderCircle, Lock, Package, Store } from "lucide-react";
+import { BadgeCheck, CheckCircle2, LoaderCircle, Lock, MailCheck, Package, Phone, Store, UserRound } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/turbo-logo.svg.asset.json";
@@ -42,6 +42,8 @@ const perks = [
 
 function AuthPage() {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [confirmationEmail, setConfirmationEmail] = useState("");
+  const [confirmationCode, setConfirmationCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
@@ -58,26 +60,61 @@ function AuthPage() {
     return () => { active = false; listener.subscription.unsubscribe(); };
   }, [navigate]);
 
-  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     const fd = new FormData(e.currentTarget);
     const email = String(fd.get("email") ?? "");
     const password = String(fd.get("password") ?? "");
+    const fullName = String(fd.get("fullName") ?? "").trim();
+    const phone = String(fd.get("phone") ?? "").trim();
+    const passwordConfirm = String(fd.get("passwordConfirm") ?? "");
+    if (mode === "signup" && (!/^01[0125][0-9]{8}$/.test(phone) || fullName.length < 2)) {
+      setLoading(false);
+      toast.error("راجع الاسم ورقم الموبايل");
+      return;
+    }
+    if (mode === "signup" && password !== passwordConfirm) {
+      setLoading(false);
+      toast.error("كلمتا المرور غير متطابقتين");
+      return;
+    }
     const result = mode === "signin"
       ? await supabase.auth.signInWithPassword({ email, password })
-      : await supabase.auth.signUp({ email, password });
+      : await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin + "/auth", data: { full_name: fullName, phone } } });
     setLoading(false);
     if (result.error) {
       toast.error(mode === "signin" ? "بيانات الدخول غير صحيحة" : "تعذر إنشاء الحساب", { description: result.error.message });
       return;
     }
     if (mode === "signup" && !result.data.session) {
-      toast.success("راجع بريدك الإلكتروني لتأكيد الحساب");
+      setConfirmationEmail(email);
+      toast.success("بعتنا لك كود تأكيد على بريدك");
       return;
     }
     toast.success("أهلاً بيك في TURBO");
     navigate({ to: "/account", replace: true });
+  };
+
+  const verifyCode = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setLoading(true);
+    const { data, error } = await supabase.auth.verifyOtp({ email: confirmationEmail, token: confirmationCode.trim(), type: "signup" });
+    if (!error && data.user) {
+      const metadata = data.user.user_metadata;
+      await supabase.from("profiles").upsert({ id: data.user.id, full_name: typeof metadata['full_name'] === "string" ? metadata['full_name'] : null, phone: typeof metadata['phone'] === "string" ? metadata['phone'] : null });
+    }
+    setLoading(false);
+    if (error) { toast.error("الكود غير صحيح أو انتهت صلاحيته"); return; }
+    toast.success("تم تأكيد حسابك");
+    navigate({ to: "/account", replace: true });
+  };
+
+  const resendCode = async () => {
+    setLoading(true);
+    const { error } = await supabase.auth.resend({ type: "signup", email: confirmationEmail, options: { emailRedirectTo: window.location.origin + "/auth" } });
+    setLoading(false);
+    error ? toast.error("تعذر إعادة إرسال الكود") : toast.success("بعتنا لك كود جديد");
   };
 
   const google = async () => {
@@ -89,7 +126,8 @@ function AuthPage() {
         return;
       }
       if (result.redirected) return; // الصفحة هتنتقل وتكمل بعد الرجوع
-      if (result.tokens) {
+      const { data } = await supabase.auth.getUser();
+      if (result.tokens || data.user) {
         toast.success("أهلاً بيك في TURBO");
         navigate({ to: "/account", replace: true });
       }
@@ -102,7 +140,7 @@ function AuthPage() {
 
   return (
     <div className="turbo-container section-space">
-      <div className="mx-auto grid max-w-4xl overflow-hidden rounded-[12px] border border-border bg-card shadow-card md:grid-cols-[1fr_1.1fr]">
+      <div className="mx-auto grid max-w-5xl overflow-hidden rounded-[12px] border border-border bg-card shadow-card md:grid-cols-[0.9fr_1.1fr]">
         <aside className="spotlight-shell relative hidden flex-col justify-between bg-brand-black p-8 text-primary-foreground md:flex">
           <div className="spotlight-glow pointer-events-none absolute inset-0" aria-hidden="true" />
           <div className="relative">
@@ -122,6 +160,16 @@ function AuthPage() {
 
         <div className="p-6 sm:p-8">
           <img src={logo.url} alt="TURBO" className="mx-auto h-12 w-40 object-contain md:mx-0 md:justify-self-start" />
+          {confirmationEmail ? <div className="mt-8">
+            <span className="grid size-14 place-items-center rounded-lg bg-primary/10 text-primary"><MailCheck className="size-7" /></span>
+            <h1 className="mt-5 text-3xl font-extrabold">أكد بريدك</h1>
+            <p className="mt-2 text-sm leading-7 text-muted-foreground">اكتب الكود المكوّن من 6 أرقام اللي بعتناه إلى <span dir="ltr" className="font-semibold text-foreground">{confirmationEmail}</span></p>
+            <form onSubmit={verifyCode} className="mt-6 grid gap-4">
+              <Input aria-label="كود التأكيد" required inputMode="numeric" autoComplete="one-time-code" maxLength={6} dir="ltr" className="h-14 text-center text-2xl font-bold tracking-[0.45em]" value={confirmationCode} onChange={(event) => setConfirmationCode(event.target.value.replace(/\D/g, "").slice(0, 6))} />
+              <Button type="submit" size="lg" disabled={loading || confirmationCode.length !== 6}>{loading ? <LoaderCircle className="animate-spin" /> : <CheckCircle2 />} تأكيد الحساب</Button>
+              <Button type="button" variant="ghost" onClick={resendCode} disabled={loading}>إعادة إرسال الكود</Button>
+            </form>
+          </div> : <>
           <h1 className="mt-6 text-center text-3xl font-bold md:text-start">{mode === "signin" ? "ادخل حسابك" : "اعمل حساب جديد"}</h1>
           <p className="mt-2 text-center text-sm text-muted-foreground md:text-start">لمتابعة الطلبات أو التقديم كتاجر جملة.</p>
 
@@ -130,7 +178,7 @@ function AuthPage() {
             <Button type="button" variant={mode === "signup" ? "secondary" : "ghost"} onClick={() => setMode("signup")}>حساب جديد</Button>
           </div>
 
-          <Button type="button" variant="outline" size="lg" className="mt-6 w-full" disabled={busy} onClick={google}>
+          <Button type="button" variant="outline" size="lg" className="mt-6 h-13 w-full justify-center border-2 bg-background text-base shadow-sm hover:border-primary" disabled={busy} onClick={google}>
             {googleLoading ? <LoaderCircle className="animate-spin" /> : <GoogleIcon />}
             المتابعة بجوجل
           </Button>
@@ -140,10 +188,15 @@ function AuthPage() {
           </div>
 
           <form onSubmit={submit} className="grid gap-4">
+            {mode === "signup" && <div className="grid gap-4 sm:grid-cols-2">
+              <label className="grid gap-2 text-sm font-bold">الاسم بالكامل<div className="relative"><UserRound className="absolute end-3 top-3 size-5 text-muted-foreground"/><Input className="pe-10" name="fullName" required minLength={2} maxLength={100} autoComplete="name" /></div></label>
+              <label className="grid gap-2 text-sm font-bold">رقم الموبايل<div className="relative"><Phone className="absolute end-3 top-3 size-5 text-muted-foreground"/><Input className="pe-10" name="phone" required type="tel" dir="ltr" inputMode="numeric" pattern="01[0125][0-9]{8}" maxLength={11} autoComplete="tel" /></div></label>
+            </div>}
             <label className="grid gap-2 text-sm font-bold">
               البريد الإلكتروني
               <Input name="email" required type="email" dir="ltr" autoComplete="email" placeholder="email@example.com" />
             </label>
+            {mode === "signup" && <label className="grid gap-2 text-sm font-bold">تأكيد كلمة المرور<Input name="passwordConfirm" required minLength={8} type="password" dir="ltr" autoComplete="new-password" /></label>}
             <label className="grid gap-2 text-sm font-bold">
               كلمة المرور
               <Input name="password" required minLength={8} type="password" dir="ltr" autoComplete={mode === "signin" ? "current-password" : "new-password"} />
@@ -156,6 +209,7 @@ function AuthPage() {
           <p className="mt-6 flex items-center justify-center gap-2 text-center text-xs text-muted-foreground">
             <Lock className="size-3.5" /> بياناتك محمية — والتسوق وإتمام الطلب لا يحتاجان إلى حساب.
           </p>
+          </>}
         </div>
       </div>
     </div>

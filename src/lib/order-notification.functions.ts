@@ -27,8 +27,7 @@ export const notifyOrderPlaced = createServerFn({ method: "POST" })
 
     const address = (order.shipping_address ?? {}) as ShippingAddress;
 
-    const result = await sendTemplateEmail("order-notification", "turpoclothes@gmail.com", {
-      templateData: {
+    const templateData = {
         orderNumber: order.order_number,
         customerName: address.recipient_name,
         phone: order.guest_phone ?? address.phone,
@@ -47,8 +46,17 @@ export const notifyOrderPlaced = createServerFn({ method: "POST" })
         subtotal: order.subtotal,
         shipping: order.shipping_total,
         total: order.grand_total,
-      },
+      };
+    const result = await sendTemplateEmail("order-notification", "turpoclothes@gmail.com", {
+      templateData,
       idempotencyKey: `order-notification-${data.orderId}`,
     });
-    return result;
+    let customerResult: { sent: boolean; reason?: string } | null = null;
+    if (order.guest_email) {
+      customerResult = await sendTemplateEmail("order-confirmation", order.guest_email, {
+        templateData,
+        idempotencyKey: `order-confirmation-${data.orderId}`,
+      });
+    }
+    return { store: result, customer: customerResult };
   });

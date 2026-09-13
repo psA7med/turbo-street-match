@@ -4,7 +4,7 @@ import { ChevronDown, LogIn, Menu, Search, ShoppingBag, Store, UserRound } from 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import logo from "@/assets/turbo-logo.svg.asset.json";
+import darkLogo from "@/assets/turbo-logo-dark.svg.asset.json";
 import mark from "@/assets/turbo-mark.svg.asset.json";
 import { useCart } from "@/lib/cart";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,7 +53,7 @@ export function SiteHeader() {
           </Sheet>
         </div>
         <div className="flex min-w-0 items-center gap-8 lg:contents">
-          <Link to="/" aria-label="TURBO الصفحة الرئيسية" className="justify-self-center lg:order-first lg:justify-self-auto"><img src={logo.url} alt="TURBO" className="h-9 w-32 object-contain lg:h-11 lg:w-40" /></Link>
+           <Link to="/" aria-label="TURBO الصفحة الرئيسية" className="justify-self-center lg:order-first lg:justify-self-auto"><img src={darkLogo.url} alt="TURBO" className="h-9 w-32 object-contain lg:h-11 lg:w-40" /></Link>
           <div className="hidden min-w-0 lg:block">
             <div className="flex items-center gap-7">
               <nav className="flex shrink-0 items-center gap-5 text-sm font-medium">{links.map(([label,to]) => <Link key={to} to={to} className="transition-colors duration-150 hover:text-primary" activeProps={{className:"text-primary"}}>{label}</Link>)}</nav>
@@ -75,7 +75,7 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   return <footer className="bg-brand-black text-primary-foreground"><div className="turbo-container grid gap-10 py-16 md:grid-cols-4">
-    <div className="md:col-span-2"><img src={logo.url} alt="TURBO" className="h-12 w-48 object-contain"/><p className="mt-6 max-w-md text-sm leading-7 text-primary-foreground/70">ملابس رياضية مصرية مصممة لحركة الشارع وروح الملعب وكل يوم.</p></div>
+    <div className="md:col-span-2"><img src={darkLogo.url} alt="TURBO" className="h-12 w-48 object-contain"/><p className="mt-6 max-w-md text-sm leading-7 text-primary-foreground/70">ملابس رياضية مصرية مصممة لحركة الشارع وروح الملعب وكل يوم.</p></div>
     <div><h2 className="font-bold">خدمة العملاء</h2><nav className="mt-4 grid gap-3 text-sm text-primary-foreground/70"><Link to="/shipping">الشحن والاستبدال</Link><Link to="/size-guide">دليل المقاسات</Link><Link to="/faq">الأسئلة الشائعة</Link><Link to="/contact">تواصل معنا</Link></nav></div>
     <div><img src={mark.url} alt="علامة T من TURBO" className="h-24 w-24 object-contain opacity-70"/><p className="mt-4 text-xs text-primary-foreground/50">© 2026 TURBO EGYPT</p></div>
   </div></footer>;
