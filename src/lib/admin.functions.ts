@@ -740,3 +740,19 @@ export const getAdminSettings = createServerFn({ method: "GET" })
       counts: { products: products ?? 0, orders: orders ?? 0, customers: customers ?? 0, activeZones: (zones ?? []).length },
     };
   });
+
+export const ensureAdmin = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await adminClient(context);
+    const db = await adminClient(context);
+    const [{ count: pendingOrders }, { count: pendingWholesale }, { count: pendingReviews }] = await Promise.all([
+      db.from("orders").select("id", { count: "exact", head: true }).eq("fulfillment_status", "pending"),
+      db.from("wholesale_applications").select("id", { count: "exact", head: true }).eq("status", "pending"),
+      db.from("reviews").select("id", { count: "exact", head: true }).eq("status", "pending"),
+    ]);
+    return {
+      ok: true as const,
+      alerts: { pendingOrders: pendingOrders ?? 0, pendingWholesale: pendingWholesale ?? 0, pendingReviews: pendingReviews ?? 0 },
+    };
+  });
