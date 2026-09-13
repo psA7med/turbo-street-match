@@ -5,22 +5,23 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-bold cursor-pointer transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+    "group inline-flex items-center justify-center gap-2.5 whitespace-nowrap rounded-lg border border-transparent text-sm font-bold cursor-pointer transition-[color,background-color,border-color,transform] duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:translate-x-0.5 disabled:pointer-events-none disabled:translate-x-0 disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-200 hover:[&_svg]:-translate-x-0.5",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow hover:-translate-y-0.5 hover:bg-primary/90 active:translate-y-0",
-        destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+        default: "border-primary bg-primary text-brand-black hover:bg-primary/90",
+        destructive: "border-destructive bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-        secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/85",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "border-brand-black bg-transparent text-brand-black hover:bg-brand-black hover:text-primary-foreground",
+        secondary: "border-brand-black bg-transparent text-brand-black hover:bg-brand-black hover:text-primary-foreground",
+        "dark-secondary": "border-primary-foreground bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-brand-black",
+        ghost: "bg-transparent text-current hover:bg-accent hover:text-accent-foreground",
+        link: "h-auto border-0 bg-transparent p-0 text-primary underline-offset-4 hover:underline",
       },
       size: {
         default: "h-11 px-5 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-12 rounded-lg px-8 text-base",
+        sm: "h-9 px-4 text-xs",
+        lg: "h-12 px-7 text-base",
         icon: "h-11 w-11",
       },
     },

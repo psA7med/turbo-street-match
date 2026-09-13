@@ -41,7 +41,7 @@ function Index() {
             <p className="eyebrow mb-4">{hero?.eyebrow_ar??"مصممة للحركة"}</p>
             <h1 className="display-title">{hero?.title_ar??"لبس للملعب والشارع."}</h1>
             <p className="mt-5 max-w-xl text-base leading-8 text-primary-foreground/75 md:text-lg">{hero?.body_ar??"قطع رياضية مصرية مريحة وعملية، معمولة للتمرين والمشاوير وكل يوم."}</p>
-            <div className="mt-8 flex flex-wrap gap-3"><Button asChild size="lg"><Link to="/shop">تسوّق الآن <ArrowLeft/></Link></Button><Button asChild size="lg" variant="outline"><Link to="/new" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-brand-black">شوف الجديد</Link></Button></div>
+            <div className="mt-8 flex flex-wrap gap-3"><Button asChild size="lg"><Link to="/shop">تسوّق الآن <ArrowLeft/></Link></Button><Button asChild size="lg" variant="dark-secondary"><Link to="/new">شوف الجديد</Link></Button></div>
           </div>
         </div>
       </section>
@@ -51,7 +51,7 @@ function Index() {
 
       <ProductBand eyebrow="وصل جديد" title="اختيارات جديدة ليومك" products={arrivals} link="/new"/>
 
-      <Spotlight className="bg-brand-black text-primary-foreground"><div className="turbo-container grid min-h-[30rem] items-center gap-10 py-16 md:grid-cols-12 md:py-20">{campaign?.image_url&&<div className="h-full min-h-72 overflow-hidden rounded-[10px] md:col-span-6"><img src={campaign.image_url} alt={campaign.title_ar??"حملة TURBO"} loading="lazy" className="size-full object-cover"/></div>}<div className={campaign?.image_url?"md:col-span-6":"md:col-span-8"}><p className="eyebrow">{campaign?.eyebrow_ar??"من قلب اللعب"}</p><h2 className="section-title mt-4 max-w-2xl">{campaign?.title_ar??"الكورة جزء من يومنا، والشارع هو المدرج."}</h2><p className="mt-5 max-w-xl leading-8 text-primary-foreground/65">{campaign?.body_ar??"تصميم عملي يتحرك معاك من أول التمرين لآخر المشوار، من غير مبالغة ومن غير تنازل عن راحتك."}</p><Button asChild variant="outline" size="lg" className="mt-8 border-primary-foreground/25 bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-brand-black"><Link to="/about">اعرف حكايتنا</Link></Button></div></div></Spotlight>
+      <Spotlight className="bg-brand-black text-primary-foreground"><div className="turbo-container grid min-h-[30rem] items-center gap-10 py-16 md:grid-cols-12 md:py-20">{campaign?.image_url&&<div className="h-full min-h-72 overflow-hidden rounded-[10px] md:col-span-6"><img src={campaign.image_url} alt={campaign.title_ar??"حملة TURBO"} loading="lazy" className="size-full object-cover"/></div>}<div className={campaign?.image_url?"md:col-span-6":"md:col-span-8"}><p className="eyebrow">{campaign?.eyebrow_ar??"من قلب اللعب"}</p><h2 className="section-title mt-4 max-w-2xl">{campaign?.title_ar??"الكورة جزء من يومنا، والشارع هو المدرج."}</h2><p className="mt-5 max-w-xl leading-8 text-primary-foreground/65">{campaign?.body_ar??"تصميم عملي يتحرك معاك من أول التمرين لآخر المشوار، من غير مبالغة ومن غير تنازل عن راحتك."}</p><Button asChild variant="dark-secondary" size="lg" className="mt-8"><Link to="/about">اعرف حكايتنا</Link></Button></div></div></Spotlight>
 
       <ProductBand eyebrow="الأكثر طلبًا" title="قطع الناس بترجع لها" products={popular} link="/shop" muted/>
 
