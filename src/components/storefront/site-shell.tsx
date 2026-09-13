@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ChevronDown, LogIn, Menu, Search, ShoppingBag, Store, UserRound } from "lucide-react";
+import { ChevronDown, Heart, LogIn, Menu, Search, ShoppingBag, Store, UserRound } from "lucide-react";
+import { useWishlist } from "@/hooks/use-wishlist";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -41,6 +42,8 @@ function useAccountState() {
 }
 
 export function SiteHeader() {
+  const { count: wishlistCount } = useWishlist();
+  const { count: wishlistCount } = useWishlist();
   const { count } = useCart();
   const accountState = useAccountState();
   return <>
@@ -65,6 +68,8 @@ export function SiteHeader() {
           <Link className="grid size-11 place-items-center lg:hidden" to="/search" aria-label="البحث"><Search className="size-5" /></Link>
           {accountState === "guest" ? <Button asChild variant="ghost" className="hidden text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground lg:inline-flex"><Link to="/auth"><LogIn/> تسجيل الدخول</Link></Button> : <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" className="hidden text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground lg:inline-flex"><UserRound/> حسابي <ChevronDown className="size-4"/></Button></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-56"><DropdownMenuLabel>حساب TURBO</DropdownMenuLabel><DropdownMenuSeparator/><DropdownMenuItem asChild><Link to="/account"><UserRound/> الحساب والطلبات</Link></DropdownMenuItem>{accountState === "pending"&&<DropdownMenuItem asChild><Link to="/wholesale-apply"><Store/> حالة طلب الجملة</Link></DropdownMenuItem>}{accountState === "wholesale"&&<DropdownMenuItem asChild><Link to="/wholesale"><Store/> بوابة تجار الجملة</Link></DropdownMenuItem>}{accountState === "admin"&&<DropdownMenuItem><Store/> إدارة المتجر</DropdownMenuItem>}</DropdownMenuContent></DropdownMenu>}
           <Link className="grid size-11 place-items-center lg:hidden" to={accountState === "guest" ? "/auth" : "/account"} aria-label={accountState === "guest" ? "تسجيل الدخول" : "الحساب"}><UserRound className="size-5" /></Link>
+          <Link className="relative grid size-11 place-items-center" to="/wishlist" aria-label={}><Heart className="size-5" />{wishlistCount>0&&<span className="absolute end-0 top-0 grid min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">{wishlistCount}</span>}</Link>
+          <Link className="relative grid size-11 place-items-center" to="/wishlist" aria-label={`المفضلة، ${wishlistCount} قطع`}><Heart className="size-5" />{wishlistCount>0&&<span className="absolute end-0 top-0 grid min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">{wishlistCount}</span>}</Link>
           <Link className="relative grid size-11 place-items-center" to="/cart" aria-label={`السلة، ${count} قطع`}><ShoppingBag className="size-5" />{count>0&&<span className="absolute end-0 top-0 grid min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">{count}</span>}</Link>
         </div>
       </div>
