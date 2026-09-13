@@ -10,6 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteFooter, SiteHeader } from "@/components/storefront/site-shell";
+import { SmoothReveal } from "@/components/ui/smooth-reveal";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -128,6 +129,7 @@ function RootComponent() {
         <main><Outlet /></main>
         <SiteFooter />
       </div>
+      <SmoothReveal />
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );
