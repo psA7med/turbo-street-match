@@ -16,3 +16,4 @@
 - [x] Unified TURBO button system from the supplied sports/editorial interaction reference
 
 - [x] Order email notifications to turpoclothes@gmail.com via notify.ahmedalidev.me (managed email, pending DNS)
++ [x] Fixed Google sign-in hang (navigate to /account after session) and redesigned auth + account pages
