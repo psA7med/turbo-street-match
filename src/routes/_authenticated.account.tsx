@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, ChevronLeft, CircleUserRound, Home, LoaderCircle, LogOut, MapPin, Package, Pencil, Plus, ShieldCheck, Store, Trash2, UserRound } from "lucide-react";
+import { Check, ChevronLeft, CircleUserRound, Home, ImagePlus, LoaderCircle, LogOut, MapPin, Package, Pencil, Plus, ShieldCheck, Store, Trash2, UserRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
