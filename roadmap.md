@@ -13,3 +13,4 @@
 - [ ] Admin/CMS architecture and core management screens
 - [ ] Responsive, accessibility, performance and security QA
 - [x] Visual rebuild: unified Arabic storefront, redesigned header and complete commerce homepage
+- [x] Unified TURBO button system from the supplied sports/editorial interaction reference
