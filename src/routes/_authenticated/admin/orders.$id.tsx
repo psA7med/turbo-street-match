@@ -68,9 +68,10 @@ function Page() {
     <>
       <AdminPageHeader
         title={order ? `طلب ${order.order_number}` : "تفاصيل الطلب"}
-        description={order ? dateTime(order.created_at) : undefined}
+        {...(order ? { description: dateTime(order.created_at) } : {})}
         actions={<Button asChild variant="outline" size="sm"><Link to="/admin/orders"><ArrowRight /> كل الطلبات</Link></Button>}
       />
+
       <TableState loading={query.isLoading} error={query.error}>
         {order && (
           <div className="grid gap-5 xl:grid-cols-[2fr_1fr]">

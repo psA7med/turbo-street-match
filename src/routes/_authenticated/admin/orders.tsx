@@ -32,11 +32,13 @@ function Page() {
   const query = useQuery({
     queryKey: ["admin-orders", debounced, fulfillment, payment, kind, from, to, sort, page],
     queryFn: () => load({ data: {
-      term: debounced || undefined,
-      fulfillment: fulfillment === ANY ? undefined : fulfillment,
-      payment: payment === ANY ? undefined : payment,
-      kind: kind === ANY ? undefined : kind,
-      from: from || undefined, to: to || undefined, sort, page,
+      ...(debounced ? { term: debounced } : {}),
+      ...(fulfillment === ANY ? {} : { fulfillment }),
+      ...(payment === ANY ? {} : { payment }),
+      ...(kind === ANY ? {} : { kind }),
+      ...(from ? { from } : {}),
+      ...(to ? { to } : {}),
+      sort, page,
     } }),
     retry: false,
   });
