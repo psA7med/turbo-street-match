@@ -170,7 +170,7 @@
 }
 
 @utility brand-grid {
-  background-image: linear-gradient(to inline-end, color-mix(in oklab, var(--border) 45%, transparent) 1px, transparent 1px);
+  background-image: linear-gradient(90deg, color-mix(in oklab, var(--border) 45%, transparent) 1px, transparent 1px);
   background-size: 5rem 100%;
 }
 

@@ -1,0 +1,2 @@
+import { createFileRoute } from "@tanstack/react-router"; import { EmptyCommerce } from "@/components/storefront/states";
+export const Route=createFileRoute("/offers")({head:()=>({meta:[{title:"عروض TURBO"},{name:"description",content:"عروض TURBO الحالية على الملابس الرياضية."},{property:"og:title",content:"عروض TURBO"},{property:"og:description",content:"تابع عروض TURBO."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:()=> <EmptyCommerce title="العروض" text="لا توجد عروض منشورة حالياً."/>});
