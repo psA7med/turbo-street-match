@@ -25,6 +25,7 @@ import { Route as ShippingRouteImport } from './routes/shipping'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as SizeGuideRouteImport } from './routes/size-guide'
 import { Route as WholesaleRouteImport } from './routes/wholesale'
+import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated.account'
 import { Route as AuthenticatedWholesaleApplyRouteImport } from './routes/_authenticated.wholesale-apply'
 import { Route as ProductsSlugRouteImport } from './routes/products/$slug'
@@ -111,6 +112,11 @@ const WholesaleRoute = WholesaleRouteImport.update({
   path: '/wholesale',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WishlistRoute = WishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
   id: '/account',
   path: '/account',
@@ -160,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRoute
   '/size-guide': typeof SizeGuideRoute
   '/wholesale': typeof WholesaleRoute
+  '/wishlist': typeof WishlistRoute
   '/account': typeof AuthenticatedAccountRoute
   '/wholesale-apply': typeof AuthenticatedWholesaleApplyRoute
   '/products/$slug': typeof ProductsSlugRoute
@@ -183,6 +190,7 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/size-guide': typeof SizeGuideRoute
   '/wholesale': typeof WholesaleRoute
+  '/wishlist': typeof WishlistRoute
   '/account': typeof AuthenticatedAccountRoute
   '/wholesale-apply': typeof AuthenticatedWholesaleApplyRoute
   '/products/$slug': typeof ProductsSlugRoute
@@ -208,6 +216,7 @@ export interface FileRoutesById {
   '/shop': typeof ShopRoute
   '/size-guide': typeof SizeGuideRoute
   '/wholesale': typeof WholesaleRoute
+  '/wishlist': typeof WishlistRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/wholesale-apply': typeof AuthenticatedWholesaleApplyRoute
   '/products/$slug': typeof ProductsSlugRoute
@@ -233,6 +242,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/size-guide'
     | '/wholesale'
+    | '/wishlist'
     | '/account'
     | '/wholesale-apply'
     | '/products/$slug'
@@ -256,6 +266,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/size-guide'
     | '/wholesale'
+    | '/wishlist'
     | '/account'
     | '/wholesale-apply'
     | '/products/$slug'
@@ -280,6 +291,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/size-guide'
     | '/wholesale'
+    | '/wishlist'
     | '/_authenticated/account'
     | '/_authenticated/wholesale-apply'
     | '/products/$slug'
@@ -305,6 +317,7 @@ export interface RootRouteChildren {
   ShopRoute: typeof ShopRoute
   SizeGuideRoute: typeof SizeGuideRoute
   WholesaleRoute: typeof WholesaleRoute
+  WishlistRoute: typeof WishlistRoute
   ProductsSlugRoute: typeof ProductsSlugRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -425,6 +438,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WholesaleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/wishlist': {
+      id: '/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/account': {
       id: '/_authenticated/account'
       path: '/account'
@@ -500,6 +520,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShopRoute: ShopRoute,
   SizeGuideRoute: SizeGuideRoute,
   WholesaleRoute: WholesaleRoute,
+  WishlistRoute: WishlistRoute,
   ProductsSlugRoute: ProductsSlugRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
