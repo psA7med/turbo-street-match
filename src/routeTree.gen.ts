@@ -29,6 +29,7 @@ import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated.account'
 import { Route as AuthenticatedWholesaleApplyRouteImport } from './routes/_authenticated.wholesale-apply'
 import { Route as ProductsSlugRouteImport } from './routes/products/$slug'
+import { Route as AuthenticatedAdminWholesaleApplicationsRouteImport } from './routes/_authenticated.admin.wholesale-applications'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -133,6 +134,12 @@ const ProductsSlugRoute = ProductsSlugRouteImport.update({
   path: '/products/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminWholesaleApplicationsRoute =
+  AuthenticatedAdminWholesaleApplicationsRouteImport.update({
+    id: '/admin/wholesale-applications',
+    path: '/admin/wholesale-applications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   id: '/lovable/email/auth/preview',
   path: '/lovable/email/auth/preview',
@@ -170,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AuthenticatedAccountRoute
   '/wholesale-apply': typeof AuthenticatedWholesaleApplyRoute
   '/products/$slug': typeof ProductsSlugRoute
+  '/admin/wholesale-applications': typeof AuthenticatedAdminWholesaleApplicationsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -194,6 +202,7 @@ export interface FileRoutesByTo {
   '/account': typeof AuthenticatedAccountRoute
   '/wholesale-apply': typeof AuthenticatedWholesaleApplyRoute
   '/products/$slug': typeof ProductsSlugRoute
+  '/admin/wholesale-applications': typeof AuthenticatedAdminWholesaleApplicationsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -220,6 +229,7 @@ export interface FileRoutesById {
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/wholesale-apply': typeof AuthenticatedWholesaleApplyRoute
   '/products/$slug': typeof ProductsSlugRoute
+  '/_authenticated/admin/wholesale-applications': typeof AuthenticatedAdminWholesaleApplicationsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -246,6 +256,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/wholesale-apply'
     | '/products/$slug'
+    | '/admin/wholesale-applications'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -270,6 +281,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/wholesale-apply'
     | '/products/$slug'
+    | '/admin/wholesale-applications'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -295,6 +307,7 @@ export interface FileRouteTypes {
     | '/_authenticated/account'
     | '/_authenticated/wholesale-apply'
     | '/products/$slug'
+    | '/_authenticated/admin/wholesale-applications'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -466,6 +479,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/wholesale-applications': {
+      id: '/_authenticated/admin/wholesale-applications'
+      path: '/admin/wholesale-applications'
+      fullPath: '/admin/wholesale-applications'
+      preLoaderRoute: typeof AuthenticatedAdminWholesaleApplicationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/lovable/email/auth/preview': {
       id: '/lovable/email/auth/preview'
       path: '/lovable/email/auth/preview'
@@ -493,11 +513,14 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedWholesaleApplyRoute: typeof AuthenticatedWholesaleApplyRoute
+  AuthenticatedAdminWholesaleApplicationsRoute: typeof AuthenticatedAdminWholesaleApplicationsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedWholesaleApplyRoute: AuthenticatedWholesaleApplyRoute,
+  AuthenticatedAdminWholesaleApplicationsRoute:
+    AuthenticatedAdminWholesaleApplicationsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
