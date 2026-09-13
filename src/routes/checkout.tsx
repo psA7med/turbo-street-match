@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { money } from "@/components/storefront/catalog";
 import { clearCart, useCart } from "@/lib/cart";
+import { notifyOrderPlaced } from "@/lib/order-notification.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 type OrderResult={order_id:string;order_number:string;subtotal:number;shipping:number;total:number};
@@ -35,6 +36,7 @@ function Page(){
     setIsSubmitting(false);
     if(error){const unavailable=error.message.includes("insufficient_stock")||error.message.includes("variant_unavailable");toast.error(unavailable?"قطعة في طلبك لم تعد متاحة":"تعذر تأكيد الطلب",{description:unavailable?"ارجع للسلة وحدّث اختياراتك.":"راجع البيانات وحاول مرة أخرى."});return;}
     const result=data as unknown as OrderResult;
+    notifyOrderPlaced({data:{orderId:result.order_id}}).catch(()=>{});
     clearCart();
     setOrder(result);
     window.scrollTo({top:0,behavior:"smooth"});
