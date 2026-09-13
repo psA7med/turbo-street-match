@@ -7,11 +7,11 @@ const SIGNED_URL_TTL = 60 * 60 * 24 * 365 * 10;
 
 // Every admin function verifies the caller's role through the user-scoped
 // client before touching the privileged client.
-async function adminClient(context: Ctx) {
+async function adminClient(context: Ctx): Promise<any> {
   const { data: isAdmin, error } = await context.supabase.rpc("is_admin", { _user_id: context.userId });
   if (error || !isAdmin) throw new Error("forbidden");
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  return supabaseAdmin;
+  return supabaseAdmin as any;
 }
 
 const startOfDay = (offsetDays = 0) => {
