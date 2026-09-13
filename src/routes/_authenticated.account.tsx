@@ -36,6 +36,7 @@ function Page() {
   const queryClient = useQueryClient();
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingAddress, setSavingAddress] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
   const [addressForm, setAddressForm] = useState<typeof emptyAddress & { id?: string } | null>(null);
 
   const googleName = typeof user.user_metadata['full_name'] === "string" ? user.user_metadata['full_name'] : typeof user.user_metadata['name'] === "string" ? user.user_metadata['name'] : "";
@@ -136,6 +137,21 @@ function Page() {
     toast.success("اتحذف العنوان");
   };
 
+  const changePassword = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSavingPassword(true);
+    const fd = new FormData(event.currentTarget);
+    const currentPassword = String(fd.get("currentPassword") ?? "");
+    const password = String(fd.get("newPassword") ?? "");
+    const confirmation = String(fd.get("newPasswordConfirm") ?? "");
+    if (password !== confirmation) { setSavingPassword(false); toast.error("كلمتا المرور الجديدتان غير متطابقتين"); return; }
+    const { error } = await supabase.auth.updateUser({ password, current_password: currentPassword });
+    setSavingPassword(false);
+    if (error) { toast.error("تعذر تغيير كلمة المرور", { description: "راجع كلمة المرور الحالية وحاول تاني." }); return; }
+    event.currentTarget.reset();
+    toast.success("تم تغيير كلمة المرور");
+  };
+
   const wholesaleCard = wholesale === "approved"
     ? { to: "/wholesale" as const, title: "بوابة تجار الجملة", desc: "أسعار الجملة وطلبات الكمية" }
     : wholesale === "pending"
@@ -177,6 +193,7 @@ function Page() {
               <label className="grid gap-2 text-sm font-bold sm:col-span-2">رابط الصورة<Input name="avatarUrl" type="url" dir="ltr" maxLength={2048} placeholder="https://..." defaultValue={avatarUrl}/><span className="font-normal text-muted-foreground">صورة Google تظهر تلقائيًا ويمكنك استبدالها.</span></label>
               <Button type="submit" className="sm:col-span-2 sm:w-fit" disabled={savingProfile}>{savingProfile ? <LoaderCircle className="animate-spin"/> : <Check/>} حفظ التعديلات</Button>
             </form>}
+            <form onSubmit={changePassword} className="mt-8 grid gap-5 border-t pt-7 sm:grid-cols-3"><div className="sm:col-span-3"><h3 className="font-bold">تغيير كلمة المرور</h3><p className="mt-1 text-sm text-muted-foreground">متاح للحسابات اللي اتعملت بالبريد وكلمة المرور.</p></div><label className="grid gap-2 text-sm font-bold">كلمة المرور الحالية<Input required name="currentPassword" type="password" autoComplete="current-password" minLength={8}/></label><label className="grid gap-2 text-sm font-bold">كلمة المرور الجديدة<Input required name="newPassword" type="password" autoComplete="new-password" minLength={8}/></label><label className="grid gap-2 text-sm font-bold">تأكيد كلمة المرور<Input required name="newPasswordConfirm" type="password" autoComplete="new-password" minLength={8}/></label><Button type="submit" variant="secondary" className="sm:col-span-3 sm:w-fit" disabled={savingPassword}>{savingPassword?<LoaderCircle className="animate-spin"/>:<ShieldCheck/>} تغيير كلمة المرور</Button></form>
           </TabsContent>
 
           <TabsContent value="addresses" className="mt-6">

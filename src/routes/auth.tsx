@@ -126,7 +126,8 @@ function AuthPage() {
         return;
       }
       if (result.redirected) return; // الصفحة هتنتقل وتكمل بعد الرجوع
-      if (result.tokens) {
+      const { data } = await supabase.auth.getUser();
+      if (result.tokens || data.user) {
         toast.success("أهلاً بيك في TURBO");
         navigate({ to: "/account", replace: true });
       }

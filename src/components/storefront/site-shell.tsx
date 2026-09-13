@@ -4,7 +4,6 @@ import { ChevronDown, LogIn, Menu, Search, ShoppingBag, Store, UserRound } from 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import logo from "@/assets/turbo-logo.svg.asset.json";
 import darkLogo from "@/assets/turbo-logo-dark.svg.asset.json";
 import mark from "@/assets/turbo-mark.svg.asset.json";
 import { useCart } from "@/lib/cart";

@@ -7,6 +7,7 @@ import {
   Head,
   Heading,
   Html,
+  Img,
   Link,
   Preview,
   Text,
@@ -19,6 +20,8 @@ interface SignupEmailProps {
   confirmationUrl: string
   token?: string
 }
+
+const MARK_URL = 'https://id-preview--2bd82060-338d-4c72-a307-cc46f95bfa5c.lovable.app/__l5e/assets-v1/71333e05-c559-4e9b-a7df-39c2ad88b0fb/turbo-mark.svg'
 
 export const SignupEmail = ({
   siteName,
@@ -34,7 +37,7 @@ export const SignupEmail = ({
     <Preview>كود تأكيد حسابك في TURBO</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>TURBO</Text>
+        <Text style={brand}><Img src={MARK_URL} width="70" height="40" alt="TURBO" style={mark}/> <span style={brandName}>TURBO</span></Text>
         <Heading style={h1}>أكد بريدك الإلكتروني</Heading>
         <Text style={text}>أهلاً بيك في{' '}
           <Link href={siteUrl} style={link}>
@@ -60,6 +63,8 @@ export default SignupEmail
 const main = { backgroundColor: '#ffffff', fontFamily: 'Tahoma, Arial, sans-serif' }
 const container = { border: '1px solid #E9E8E5', margin: '24px auto', maxWidth: '520px', padding: '32px' }
 const brand = { backgroundColor: '#111111', color: '#FF4D00', fontSize: '28px', fontWeight: 'bold' as const, margin: '0 0 28px', padding: '18px 20px' }
+const mark = { display: 'inline-block', objectFit: 'contain' as const, verticalAlign: 'middle' }
+const brandName = { color: '#FFFFFF', marginRight: '12px', verticalAlign: 'middle' }
 const h1 = {
   fontSize: '22px',
   fontWeight: 'bold' as const,
