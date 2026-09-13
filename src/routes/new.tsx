@@ -1,0 +1,2 @@
+import { createFileRoute } from "@tanstack/react-router"; import { EmptyCommerce } from "@/components/storefront/states";
+export const Route=createFileRoute("/new")({head:()=>({meta:[{title:"جديد TURBO"},{name:"description",content:"أحدث إصدارات TURBO الرياضية."},{property:"og:title",content:"جديد TURBO"},{property:"og:description",content:"أحدث قطع TURBO للملعب والشارع."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:()=> <EmptyCommerce title="الجديد" text="أول القطع الجديدة ستظهر هنا فور نشرها."/>});

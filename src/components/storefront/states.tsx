@@ -1,0 +1,2 @@
+import { PackageOpen } from "lucide-react";
+export function EmptyCommerce({title,text}:{title:string;text:string}){return <div className="turbo-container section-space min-h-[55vh]"><h1 className="text-4xl font-bold md:text-6xl">{title}</h1><div className="mt-12 grid min-h-64 place-items-center rounded-[10px] border border-dashed border-border bg-card text-center"><div><PackageOpen className="mx-auto size-10 text-primary"/><p className="mt-4 text-muted-foreground">{text}</p></div></div></div>}

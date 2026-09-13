@@ -1,0 +1,5 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { CatalogGrid } from "@/components/storefront/catalog";
+
+export const Route = createFileRoute("/shop")({ head: () => ({ meta: [{title:"المتجر — TURBO"},{name:"description",content:"تصفح ملابس TURBO الرياضية حسب الفئة والمقاس واللون والسعر."},{property:"og:title",content:"متجر TURBO"},{property:"og:description",content:"ملابس رياضية مصرية للملعب والشارع."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}] }), component: Shop });
+function Shop(){return <div className="turbo-container section-space"><div className="mb-10 border-b border-border pb-8"><p className="text-sm font-bold text-primary">TURBO SHOP</p><h1 className="mt-2 text-4xl font-bold md:text-6xl">اختار قطعتك</h1><p className="mt-3 text-muted-foreground">تصفية واضحة حسب الفئة والمقاس واللون.</p></div><CatalogGrid/></div>}
