@@ -29,6 +29,7 @@ export const Route = createFileRoute("/_authenticated/account")({
 const statusLabel = { pending: "قيد المراجعة", confirmed: "تم التأكيد", processing: "قيد التجهيز", shipped: "خرج للتوصيل", delivered: "تم التوصيل", cancelled: "ملغي" } as const;
 type Address = { id: string; label: string | null; recipient_name: string; phone: string; governorate: string; city: string; street_address: string; building_details: string | null; landmark: string | null; is_default: boolean };
 const emptyAddress = { label: "المنزل", recipient_name: "", phone: "", governorate: "", city: "", street_address: "", building_details: "", landmark: "", is_default: false };
+const SIZE_OPTIONS = ["S", "M", "L", "XL", "2XL", "3XL", "4XL"] as const;
 
 function Page() {
   const { user } = Route.useRouteContext();
@@ -37,6 +38,8 @@ function Page() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingAddress, setSavingAddress] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [sizeChoice, setSizeChoice] = useState<string | null>(null);
   const [addressForm, setAddressForm] = useState<typeof emptyAddress & { id?: string } | null>(null);
 
   const googleName = typeof user.user_metadata['full_name'] === "string" ? user.user_metadata['full_name'] : typeof user.user_metadata['name'] === "string" ? user.user_metadata['name'] : "";
