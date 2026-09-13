@@ -42,7 +42,9 @@ export function SmoothReveal() {
       });
     };
 
-    const frame = window.requestAnimationFrame(() => register());
+    // Nested route content hydrates after the root effect. Waiting briefly keeps
+    // motion attributes from changing server-rendered markup during hydration.
+    const timer = window.setTimeout(() => register(), 450);
     const mutations = new MutationObserver((records) => {
       for (const record of records) {
         for (const node of record.addedNodes) {
@@ -54,7 +56,7 @@ export function SmoothReveal() {
     if (main) mutations.observe(main, { childList: true, subtree: true });
 
     return () => {
-      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
       mutations.disconnect();
       observer.disconnect();
     };
