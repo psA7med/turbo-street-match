@@ -51,7 +51,7 @@ export function SiteHeader() {
       <div className="turbo-container grid h-16 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 lg:h-20 lg:grid-cols-[auto_minmax(20rem,1fr)_auto] lg:gap-8">
         <div className="flex items-center justify-self-start lg:hidden">
           <Sheet><SheetTrigger asChild><Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" aria-label="فتح القائمة"><Menu /></Button></SheetTrigger>
-            <SheetContent side="right" className="w-[88%] max-w-sm"><SheetTitle className="text-start">القائمة</SheetTitle><nav className="mt-8 grid gap-1">{links.map(([label,to]) => <Link key={to} to={to} className="border-b border-border py-4 text-lg font-semibold">{label}</Link>)}<Link to="/wholesale" className="py-4 text-lg font-semibold text-primary">تجار الجملة</Link></nav></SheetContent>
+            <SheetContent side="right" className="w-[88%] max-w-sm"><SheetTitle className="text-start">القائمة</SheetTitle><nav className="mt-8 grid gap-1">{links.map(([label,to]) => <Link key={to} to={to} className="border-b border-border py-4 text-lg font-semibold">{label}</Link>)}<Link to="/wholesale" className="py-4 text-lg font-semibold text-primary">تجار الجملة</Link>{accountState === "admin"&&<Link to="/admin/wholesale-applications" className="py-4 text-lg font-semibold text-primary">لوحة الإدارة — طلبات الجملة</Link>}{accountState !== "guest"&&<Link to="/account" className="py-4 text-lg font-semibold">حسابي</Link>}</nav></SheetContent>
           </Sheet>
         </div>
         <div className="flex min-w-0 items-center gap-8 lg:contents">
