@@ -11,10 +11,10 @@ import mark from "@/assets/turbo-mark.svg.asset.json";
 export type CatalogProduct = {
   id:string; slug:string; name_ar:string; name_en:string|null; is_new:boolean; is_bestseller:boolean;
   category_id:string|null; product_images:{url:string;alt_ar:string;sort_order:number}[];
-  product_variants:{id:string;retail_price:number;compare_at_price:number|null;color_name_ar:string;color_value:string|null;size_label:string}[];
+  product_variants:{id:string;retail_price:number;compare_at_price:number|null;color_name_ar:string;color_value:string|null;size_label:string;sku:string}[];
 };
 
-export function useCatalogProducts(){return useQuery({queryKey:["catalog-products"],queryFn:async()=>{const {data,error}=await supabase.from("products").select("id,slug,name_ar,name_en,is_new,is_bestseller,category_id,product_images(url,alt_ar,sort_order),product_variants(id,retail_price,compare_at_price,color_name_ar,color_value,size_label)").eq("status","published").order("created_at",{ascending:false});if(error)throw error;return (data??[]) as CatalogProduct[];}})}
+export function useCatalogProducts(){return useQuery({queryKey:["catalog-products"],queryFn:async()=>{const {data,error}=await supabase.from("products").select("id,slug,name_ar,name_en,is_new,is_bestseller,category_id,product_images(url,alt_ar,sort_order),product_variants(id,retail_price,compare_at_price,color_name_ar,color_value,size_label,sku)").eq("status","published").order("created_at",{ascending:false});if(error)throw error;return (data??[]) as CatalogProduct[];}})}
 export const money=(n:number)=>new Intl.NumberFormat("ar-EG",{style:"currency",currency:"EGP",maximumFractionDigits:0}).format(n);
 
 export function ProductCard({product}:{product:CatalogProduct}){
