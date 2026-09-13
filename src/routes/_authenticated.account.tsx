@@ -176,11 +176,13 @@ function Page() {
       </section>
 
       <div className="turbo-container py-8 sm:py-12">
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="rounded-[10px] border bg-card p-5"><span className="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"><ShieldCheck className="size-5"/></span><strong className="mt-4 block">حساب مؤكد</strong><p className="mt-1 text-sm text-muted-foreground">بياناتك وطلباتك محفوظة بأمان</p></div>
-          <div className="rounded-[10px] border bg-card p-5"><span className="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"><Package className="size-5"/></span><strong className="mt-4 block">{orders.length} طلب</strong><p className="mt-1 text-sm text-muted-foreground">كل طلباتك في مكان واحد</p></div>
-          <Link to={wholesaleCard.to} className="rounded-[10px] border bg-card p-5 transition-colors hover:border-primary"><span className="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"><Store className="size-5"/></span><strong className="mt-4 block">{wholesaleCard.title}</strong><p className="mt-1 text-sm text-muted-foreground">{wholesaleCard.desc}</p></Link>
-        </div>
+        <Link to={wholesaleCard.to} className="flex items-center justify-between gap-4 rounded-[10px] border bg-card p-5 transition-colors hover:border-primary">
+          <div className="flex items-center gap-4">
+            <span className="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"><Store className="size-5"/></span>
+            <div><strong className="block">{wholesaleCard.title}</strong><p className="mt-1 text-sm text-muted-foreground">{wholesaleCard.desc}</p></div>
+          </div>
+          <ChevronLeft className="size-5 text-muted-foreground" aria-hidden="true" />
+        </Link>
 
         <Tabs defaultValue="profile" className="mt-8">
           <TabsList className="grid h-auto w-full grid-cols-3 bg-card p-1.5 shadow-card sm:w-fit"><TabsTrigger value="profile" className="gap-2 px-4 py-2.5"><UserRound className="size-4"/> بياناتي</TabsTrigger><TabsTrigger value="addresses" className="gap-2 px-4 py-2.5"><MapPin className="size-4"/> العناوين</TabsTrigger><TabsTrigger value="orders" className="gap-2 px-4 py-2.5"><Package className="size-4"/> الطلبات</TabsTrigger></TabsList>
