@@ -102,7 +102,7 @@ function AuthPage() {
     const { data, error } = await supabase.auth.verifyOtp({ email: confirmationEmail, token: confirmationCode.trim(), type: "signup" });
     if (!error && data.user) {
       const metadata = data.user.user_metadata;
-      await supabase.from("profiles").upsert({ id: data.user.id, full_name: typeof metadata.full_name === "string" ? metadata.full_name : null, phone: typeof metadata.phone === "string" ? metadata.phone : null });
+      await supabase.from("profiles").upsert({ id: data.user.id, full_name: typeof metadata['full_name'] === "string" ? metadata['full_name'] : null, phone: typeof metadata['phone'] === "string" ? metadata['phone'] : null });
     }
     setLoading(false);
     if (error) { toast.error("الكود غير صحيح أو انتهت صلاحيته"); return; }
