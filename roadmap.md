@@ -5,7 +5,7 @@
 - [x] Homepage and catalog surfaces driven by live catalog data
 - [x] PLP, search, filters and category entry points
 - [x] PDP variants, sizes and gallery
-- [x] Persistent guest cart and checkout interface
+- [x] Persistent guest cart, live Egyptian shipping and secure guest checkout
 - [x] Auth, account summary and order history
 - [ ] Profile editing, addresses and detailed order tracking
 - [x] Protected wholesale application and application status
