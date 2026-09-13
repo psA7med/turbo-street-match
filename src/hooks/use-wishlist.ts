@@ -8,7 +8,7 @@ export function useWishlist() {
   const [localIds, setLocalIds] = useState<string[]>(getLocal());
 
   useEffect(() => {
-    const sync = () => setLocalIds(getLocal());
+    const sync = () => { setLocalIds(getLocal()); void queryClient.invalidateQueries({ queryKey: ["wishlist"] }); };
     window.addEventListener("turbo-wishlist", sync);
     window.addEventListener("storage", sync);
     const { data: listener } = supabase.auth.onAuthStateChange(() => queryClient.invalidateQueries({ queryKey: ["wishlist"] }));

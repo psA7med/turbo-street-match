@@ -33,7 +33,7 @@ const darkModeCss = `
 `
 
 export const emailStyles = {
-  body: { backgroundColor: '#F5F3EE', color: '#111111', fontFamily: 'Tahoma, Arial, sans-serif', margin: 0, padding: '24px 12px', textAlign: 'right' as const },
+  body: { backgroundColor: '#F5F3EE', color: '#111111', direction: 'rtl' as const, fontFamily: '"Segoe UI", Arial, sans-serif', margin: 0, padding: '24px 12px', textAlign: 'right' as const },
   container: { backgroundColor: '#FFFFFF', border: '1px solid #E9E8E5', borderRadius: '10px', direction: 'rtl' as const, margin: '0 auto', maxWidth: '560px', overflow: 'hidden' as const, textAlign: 'right' as const },
   header: { backgroundColor: '#111111', direction: 'rtl' as const, padding: '16px 24px', textAlign: 'right' as const },
   mark: { display: 'inline-block', objectFit: 'contain' as const, verticalAlign: 'middle' },
@@ -43,7 +43,7 @@ export const emailStyles = {
   text: { color: '#3A3A3A', fontSize: '15px', lineHeight: '1.9', margin: '0 0 18px', textAlign: 'right' as const },
   muted: { color: '#737373', fontSize: '13px', lineHeight: '1.8', margin: '20px 0 0', textAlign: 'right' as const },
   button: { backgroundColor: '#FF4D00', borderRadius: '8px', color: '#FFFFFF', display: 'inline-block', fontSize: '14px', fontWeight: 700, padding: '12px 22px', textDecoration: 'none' },
-  code: { backgroundColor: '#F5F3EE', border: '1px solid #E9E8E5', borderRadius: '8px', color: '#111111', direction: 'ltr' as const, fontFamily: 'Tahoma, Arial, sans-serif', fontSize: '30px', fontWeight: 700, letterSpacing: '6px', margin: '20px 0', padding: '15px', textAlign: 'center' as const },
+  code: { backgroundColor: '#F5F3EE', border: '1px solid #E9E8E5', borderRadius: '8px', color: '#111111', direction: 'ltr' as const, fontFamily: '"Segoe UI", Arial, sans-serif', fontSize: '30px', fontWeight: 700, letterSpacing: '6px', margin: '20px 0', padding: '15px', textAlign: 'center' as const },
   rule: { borderColor: '#E9E8E5', margin: '20px 0' },
   footer: { borderTop: '1px solid #E9E8E5', color: '#737373', direction: 'rtl' as const, fontSize: '11px', margin: 0, padding: '16px 28px', textAlign: 'right' as const },
 } as const
