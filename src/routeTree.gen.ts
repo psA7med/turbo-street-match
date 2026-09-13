@@ -28,6 +28,7 @@ import { Route as WholesaleRouteImport } from './routes/wholesale'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated.account'
 import { Route as AuthenticatedWholesaleApplyRouteImport } from './routes/_authenticated.wholesale-apply'
 import { Route as ProductsSlugRouteImport } from './routes/products/$slug'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -124,6 +125,12 @@ const ProductsSlugRoute = ProductsSlugRouteImport.update({
   path: '/products/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AuthenticatedAccountRoute
   '/wholesale-apply': typeof AuthenticatedWholesaleApplyRoute
   '/products/$slug': typeof ProductsSlugRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -164,6 +172,7 @@ export interface FileRoutesByTo {
   '/account': typeof AuthenticatedAccountRoute
   '/wholesale-apply': typeof AuthenticatedWholesaleApplyRoute
   '/products/$slug': typeof ProductsSlugRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -186,6 +195,7 @@ export interface FileRoutesById {
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/wholesale-apply': typeof AuthenticatedWholesaleApplyRoute
   '/products/$slug': typeof ProductsSlugRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -208,6 +218,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/wholesale-apply'
     | '/products/$slug'
+    | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -228,6 +239,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/wholesale-apply'
     | '/products/$slug'
+    | '/lovable/email/transactional/preview'
   id:
     | '__root__'
     | '/'
@@ -249,6 +261,7 @@ export interface FileRouteTypes {
     | '/_authenticated/account'
     | '/_authenticated/wholesale-apply'
     | '/products/$slug'
+    | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -269,6 +282,7 @@ export interface RootRouteChildren {
   SizeGuideRoute: typeof SizeGuideRoute
   WholesaleRoute: typeof WholesaleRoute
   ProductsSlugRoute: typeof ProductsSlugRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -406,6 +420,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -440,6 +461,7 @@ const rootRouteChildren: RootRouteChildren = {
   SizeGuideRoute: SizeGuideRoute,
   WholesaleRoute: WholesaleRoute,
   ProductsSlugRoute: ProductsSlugRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
