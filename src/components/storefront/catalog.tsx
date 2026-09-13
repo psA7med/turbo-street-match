@@ -1,14 +1,14 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Heart, PackageOpen, ShoppingBag, SlidersHorizontal } from "lucide-react";
+import { PackageOpen, ShoppingBag, SlidersHorizontal } from "lucide-react";
 import { useWishlist } from "@/hooks/use-wishlist";
 import { toggleWishlist } from "@/lib/wishlist";
-import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { WishlistToggle } from "@/components/ui/wishlist-toggle";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import mark from "@/assets/turbo-mark.svg.asset.json";
 
@@ -30,7 +30,7 @@ export function ProductCard({product}:{product:CatalogProduct}){
   return <article className="group min-w-0"><div className="relative"><Link to="/products/$slug" params={{slug:product.slug}} className="relative block aspect-[4/5] overflow-hidden rounded-[10px] border border-border bg-off-white">
     {image?<><img src={image.url} alt={image.alt_ar} loading="lazy" className="size-full object-cover transition-opacity duration-300 group-hover:opacity-0"/>{alternate&&<img src={alternate.url} alt={alternate.alt_ar} loading="lazy" className="absolute inset-0 size-full object-cover opacity-0 transition-all duration-300 group-hover:scale-[1.02] group-hover:opacity-100"/>}</>:<img src={mark.url} alt="" className="absolute inset-0 m-auto w-1/2 opacity-[.08]"/>}
     <div className="absolute start-3 top-3 flex flex-wrap gap-2">{product.is_new&&<Badge>جديد</Badge>}{product.is_bestseller&&<Badge variant="secondary">الأكثر طلباً</Badge>}</div>
-  </Link><Button type="button" variant="outline" size="icon" aria-label={has(product.id)?"إزالة من المفضلة":"أضف للمفضلة"} aria-pressed={has(product.id)} onClick={async()=>{const wasSaved=has(product.id);try{await toggleWishlist(product.id);toast.success(wasSaved?"اتشالت من المفضلة":"اتضافت للمفضلة")}catch{toast.error("تعذر تحديث المفضلة")}}} className={cn("absolute end-3 top-3 rounded-lg bg-background/95 shadow-none",has(product.id)&&"border-primary text-primary")}><Heart className={cn("size-5", has(product.id) && "fill-current")}/></Button><Button asChild size="sm" className="absolute inset-x-3 bottom-3 hidden opacity-0 transition-opacity duration-200 group-hover:flex group-hover:opacity-100"><Link to="/products/$slug" params={{slug:product.slug}}><ShoppingBag/> اختار المقاس</Link></Button></div><div className="mt-4"><Link to="/products/$slug" params={{slug:product.slug}} className="font-semibold transition-colors hover:text-primary">{product.name_ar}</Link><div className="mt-2 flex flex-wrap items-center gap-2"><span className="font-bold">{price===null?"السعر قريباً":money(price)}</span>{compare!==null&&price!==null&&compare>price&&<del className="text-sm text-muted-foreground">{money(compare)}</del>}</div>{colors.length>0&&<p className="mt-2 text-xs text-muted-foreground">{colors.join(" · ")}</p>}</div>
+  </Link><WishlistToggle pressed={has(product.id)} onPressedChange={async()=>{const wasSaved=has(product.id);try{await toggleWishlist(product.id);toast.success(wasSaved?"اتشالت من المفضلة":"اتضافت للمفضلة")}catch{toast.error("تعذر تحديث المفضلة")}}} className="absolute end-3 top-3"/><Button asChild size="sm" className="absolute inset-x-3 bottom-3 hidden opacity-0 transition-opacity duration-200 group-hover:flex group-hover:opacity-100"><Link to="/products/$slug" params={{slug:product.slug}}><ShoppingBag/> اختار المقاس</Link></Button></div><div className="mt-4"><Link to="/products/$slug" params={{slug:product.slug}} className="font-semibold transition-colors hover:text-primary">{product.name_ar}</Link><div className="mt-2 flex flex-wrap items-center gap-2"><span className="font-bold">{price===null?"السعر قريباً":money(price)}</span>{compare!==null&&price!==null&&compare>price&&<del className="text-sm text-muted-foreground">{money(compare)}</del>}</div>{colors.length>0&&<p className="mt-2 text-xs text-muted-foreground">{colors.join(" · ")}</p>}</div>
   </article>;
 }
 
