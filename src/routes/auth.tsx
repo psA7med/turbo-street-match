@@ -99,20 +99,25 @@ function AuthPage() {
   const verifyCode = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
-    const { data, error } = await supabase.auth.verifyOtp({ email: confirmationEmail, token: confirmationCode.trim(), type: "signup" });
+    // الكود المرسل قد يكون من نوع signup أو email حسب طريقة الإرسال، فنجرب الاثنين
+    const token = confirmationCode.replace(/\D/g, "");
+    const email = confirmationEmail.trim().toLowerCase();
+    let result = await supabase.auth.verifyOtp({ email, token, type: "signup" });
+    if (result.error) result = await supabase.auth.verifyOtp({ email, token, type: "email" });
+    const { data, error } = result;
     if (!error && data.user) {
       const metadata = data.user.user_metadata;
       await supabase.from("profiles").upsert({ id: data.user.id, full_name: typeof metadata['full_name'] === "string" ? metadata['full_name'] : null, phone: typeof metadata['phone'] === "string" ? metadata['phone'] : null });
     }
     setLoading(false);
-    if (error) { toast.error("الكود غير صحيح أو انتهت صلاحيته"); return; }
+    if (error) { toast.error("الكود غير صحيح أو انتهت صلاحيته", { description: "استخدم آخر كود وصلك، أو اطلب كود جديد." }); return; }
     toast.success("تم تأكيد حسابك");
     navigate({ to: "/account", replace: true });
   };
 
   const resendCode = async () => {
     setLoading(true);
-    const { error } = await supabase.auth.resend({ type: "signup", email: confirmationEmail, options: { emailRedirectTo: window.location.origin + "/auth" } });
+    const { error } = await supabase.auth.resend({ type: "signup", email: confirmationEmail.trim().toLowerCase(), options: { emailRedirectTo: window.location.origin + "/auth" } });
     setLoading(false);
     error ? toast.error("تعذر إعادة إرسال الكود") : toast.success("بعتنا لك كود جديد");
   };
