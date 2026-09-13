@@ -188,7 +188,8 @@ function Page() {
       : { to: "/wholesale-apply" as const, title: "قدّم كتاجر جملة", desc: "افتح أسعار الجملة لمحلك" };
 
   const displayName = profile?.full_name || googleName || "لاعب TURBO";
-  const avatarUrl = profile?.avatar_url || googleAvatar;
+  const avatarUrl = (storedAvatar.startsWith("http") ? storedAvatar : signedAvatar) || googleAvatar;
+  const activeSize = sizeChoice ?? profile?.preferred_size ?? "";
 
   return (
     <div className="min-h-[70vh] bg-off-white">
