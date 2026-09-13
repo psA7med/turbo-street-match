@@ -223,8 +223,20 @@ function Page() {
               <label className="grid gap-2 text-sm font-bold">الاسم بالكامل<Input name="fullName" required minLength={2} maxLength={100} defaultValue={displayName}/></label>
               <label className="grid gap-2 text-sm font-bold">رقم الموبايل<Input name="phone" type="tel" dir="ltr" inputMode="numeric" maxLength={11} defaultValue={profile?.phone ?? ""}/></label>
               <label className="grid gap-2 text-sm font-bold">البريد الإلكتروني<Input name="email" type="email" dir="ltr" required defaultValue={user.email ?? ""}/><span className="font-normal text-muted-foreground">تغييره يحتاج تأكيد البريد الجديد.</span></label>
-              <label className="grid gap-2 text-sm font-bold">المقاس المفضل<Input name="preferredSize" maxLength={20} placeholder="مثال: L" defaultValue={profile?.preferred_size ?? ""}/></label>
-              <label className="grid gap-2 text-sm font-bold sm:col-span-2">رابط الصورة<Input name="avatarUrl" type="url" dir="ltr" maxLength={2048} placeholder="https://..." defaultValue={avatarUrl}/><span className="font-normal text-muted-foreground">صورة Google تظهر تلقائيًا ويمكنك استبدالها.</span></label>
+              <div className="grid gap-2 text-sm font-bold sm:col-span-2">المقاس المفضل
+                <div className="flex flex-wrap gap-2">{SIZE_OPTIONS.map((size)=>(<Button key={size} type="button" size="sm" variant={activeSize===size?"default":"outline"} onClick={()=>setSizeChoice(activeSize===size?"":size)} aria-pressed={activeSize===size}><span dir="ltr">{size}</span></Button>))}</div>
+                <span className="font-normal text-muted-foreground">هنختار مقاسك تلقائيًا في صفحة المنتج لو كان متاح.</span>
+              </div>
+              <div className="grid gap-2 text-sm font-bold sm:col-span-2">صورة الحساب
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-full border bg-muted text-sm">{avatarUrl ? <img src={avatarUrl} alt="" className="size-full object-cover" referrerPolicy="no-referrer"/> : <span>{displayName.slice(0,2)}</span>}</div>
+                  <label className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-input bg-background px-4 text-sm font-bold hover:border-primary">
+                    {uploadingAvatar ? <LoaderCircle className="size-4 animate-spin"/> : <ImagePlus className="size-4"/>} ارفع صورة من جهازك
+                    <input type="file" accept="image/*" className="hidden" disabled={uploadingAvatar} onChange={(event)=>{const file=event.target.files?.[0]; event.target.value=""; if(file) void uploadAvatar(file);}}/>
+                  </label>
+                </div>
+                <span className="font-normal text-muted-foreground">صورة Google تظهر تلقائيًا، ويمكنك رفع صورة بحد 5 ميجا.</span>
+              </div>
               <Button type="submit" className="sm:col-span-2 sm:w-fit" disabled={savingProfile}>{savingProfile ? <LoaderCircle className="animate-spin"/> : <Check/>} حفظ التعديلات</Button>
             </form>}
             <form onSubmit={changePassword} className="mt-8 grid gap-5 border-t pt-7 sm:grid-cols-3"><div className="sm:col-span-3"><h3 className="font-bold">تغيير كلمة المرور</h3><p className="mt-1 text-sm text-muted-foreground">متاح للحسابات اللي اتعملت بالبريد وكلمة المرور.</p></div><label className="grid gap-2 text-sm font-bold">كلمة المرور الحالية<Input required name="currentPassword" type="password" autoComplete="current-password" minLength={8}/></label><label className="grid gap-2 text-sm font-bold">كلمة المرور الجديدة<Input required name="newPassword" type="password" autoComplete="new-password" minLength={8}/></label><label className="grid gap-2 text-sm font-bold">تأكيد كلمة المرور<Input required name="newPasswordConfirm" type="password" autoComplete="new-password" minLength={8}/></label><Button type="submit" variant="secondary" className="sm:col-span-3 sm:w-fit" disabled={savingPassword}>{savingPassword?<LoaderCircle className="animate-spin"/>:<ShieldCheck/>} تغيير كلمة المرور</Button></form>
