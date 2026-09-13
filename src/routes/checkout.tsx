@@ -48,10 +48,14 @@ function Page(){
     if(!selectedZone){toast.error("اختار محافظة متاحة للشحن");return;}
     setIsSubmitting(true);
     const {data,error}=await supabase.rpc("place_retail_order",{p_customer_name:fields.customerName.trim(),p_phone:fields.phone,p_email:fields.email.trim(),p_governorate:fields.governorate,p_city:fields.city.trim(),p_street_address:fields.streetAddress.trim(),p_landmark:fields.landmark.trim(),p_items:lines.map(line=>({variant_id:line.variantId,quantity:line.quantity}))});
-    setIsSubmitting(false);
-    if(error){const unavailable=error.message.includes("insufficient_stock")||error.message.includes("variant_unavailable");toast.error(unavailable?"قطعة في طلبك لم تعد متاحة":"تعذر تأكيد الطلب",{description:unavailable?"ارجع للسلة وحدّث اختياراتك.":"راجع البيانات وحاول مرة أخرى."});return;}
+    if(error){setIsSubmitting(false);const unavailable=error.message.includes("insufficient_stock")||error.message.includes("variant_unavailable");toast.error(unavailable?"قطعة في طلبك لم تعد متاحة":"تعذر تأكيد الطلب",{description:unavailable?"ارجع للسلة وحدّث اختياراتك.":"راجع البيانات وحاول مرة أخرى."});return;}
     const result=data as unknown as OrderResult;
-    notifyOrderPlaced({data:{orderId:result.order_id}}).catch(()=>{});
+    try {
+      await notifyOrderPlaced({data:{orderId:result.order_id}});
+    } catch {
+      // The order is already confirmed; email delivery can be retried independently.
+    }
+    setIsSubmitting(false);
     clearCart();
     setOrder(result);
     window.scrollTo({top:0,behavior:"smooth"});
