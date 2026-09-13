@@ -132,11 +132,10 @@ function Page() {
     const fd = new FormData(event.currentTarget);
     const fullName = String(fd.get("fullName") ?? "").trim();
     const phone = String(fd.get("phone") ?? "").trim();
-    const avatarUrl = String(fd.get("avatarUrl") ?? "").trim();
-    const preferredSize = String(fd.get("preferredSize") ?? "").trim();
+    const preferredSize = sizeChoice ?? profile?.preferred_size ?? "";
     const email = String(fd.get("email") ?? "").trim();
     if (phone && !/^01[0125][0-9]{8}$/.test(phone)) { setSavingProfile(false); toast.error("اكتب رقم موبايل مصري صحيح"); return; }
-    const { error } = await supabase.from("profiles").upsert({ id: user.id, full_name: fullName, phone: phone || null, avatar_url: avatarUrl || null, preferred_size: preferredSize || null });
+    const { error } = await supabase.from("profiles").upsert({ id: user.id, full_name: fullName, phone: phone || null, preferred_size: preferredSize || null });
     let emailError = null;
     if (!error && email && email !== user.email) ({ error: emailError } = await supabase.auth.updateUser({ email }));
     setSavingProfile(false);
