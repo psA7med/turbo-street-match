@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckCircle2, CreditCard, Loader2, MapPin, PackageCheck, Truck } from "lucide-react";
@@ -27,9 +27,24 @@ function Page(){
   const shipping=selectedZone?.fee??0;
   const update=(key:keyof CheckoutFields,value:string)=>setFields(current=>({...current,[key]:value}));
 
+  useEffect(()=>{
+    let active=true;
+    supabase.auth.getUser().then(async({data})=>{
+      if(!active||!data.user)return;
+      const[{data:profile},{data:address}]=await Promise.all([
+        supabase.from("profiles").select("full_name,phone").eq("id",data.user.id).maybeSingle(),
+        supabase.from("addresses").select("recipient_name,phone,governorate,city,street_address,landmark").eq("user_id",data.user.id).order("is_default",{ascending:false}).limit(1).maybeSingle(),
+      ]);
+      if(!active)return;
+      setFields(current=>({customerName:address?.recipient_name||profile?.full_name||current.customerName,phone:address?.phone||profile?.phone||current.phone,email:data.user.email||current.email,governorate:address?.governorate||current.governorate,city:address?.city||current.city,streetAddress:address?.street_address||current.streetAddress,landmark:address?.landmark||current.landmark}));
+    });
+    return()=>{active=false};
+  },[]);
+
   const submit=async(event:FormEvent<HTMLFormElement>)=>{
     event.preventDefault();
     if(!/^01[0125][0-9]{8}$/.test(fields.phone)){toast.error("راجع رقم الموبايل",{description:"اكتب رقم مصري صحيح مكوّن من 11 رقم."});return;}
+    if(!fields.email.trim()){toast.error("اكتب بريدك الإلكتروني",{description:"هنبعت عليه تأكيد الطلب."});return;}
     if(!selectedZone){toast.error("اختار محافظة متاحة للشحن");return;}
     setIsSubmitting(true);
     const {data,error}=await supabase.rpc("place_retail_order",{p_customer_name:fields.customerName.trim(),p_phone:fields.phone,p_email:fields.email.trim(),p_governorate:fields.governorate,p_city:fields.city.trim(),p_street_address:fields.streetAddress.trim(),p_landmark:fields.landmark.trim(),p_items:lines.map(line=>({variant_id:line.variantId,quantity:line.quantity}))});
