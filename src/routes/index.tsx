@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ShieldCheck, Truck, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import mark from "@/assets/turbo-mark.svg.asset.json";
+import { ProductCard, useCatalogProducts } from "@/components/storefront/catalog";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { data: products=[] } = useCatalogProducts();
   return (
     <>
       <section className="relative min-h-[72vh] overflow-hidden bg-brand-black text-primary-foreground">
@@ -34,7 +36,7 @@ function Index() {
       <section className="border-b border-border bg-off-white"><div className="turbo-container grid divide-y divide-border py-4 sm:grid-cols-3 sm:divide-x sm:divide-y-0 sm:divide-x-reverse"><div className="flex items-center justify-center gap-3 px-4 py-4 text-sm font-bold"><Truck className="size-5 text-primary"/>توصيل لكل مصر</div><div className="flex items-center justify-center gap-3 px-4 py-4 text-sm font-bold"><RefreshCcw className="size-5 text-primary"/>استبدال سهل</div><div className="flex items-center justify-center gap-3 px-4 py-4 text-sm font-bold"><ShieldCheck className="size-5 text-primary"/>دفع آمن وموثوق</div></div></section>
       <section className="section-space"><div className="turbo-container"><div className="mb-10 flex items-end justify-between gap-4"><div><p className="text-sm font-bold text-primary">اختار لعبتك</p><h2 className="mt-2 text-3xl font-bold md:text-5xl">كل يوم له طقم</h2></div><Link to="/categories" className="hidden font-bold underline decoration-primary decoration-2 underline-offset-8 sm:block">كل الفئات</Link></div><div className="grid gap-4 md:grid-cols-3">{["تيشيرتات الملعب","أساسيات الشارع","أطقم التدريب"].map((title,i)=><Link to="/shop" key={title} className="group relative min-h-72 overflow-hidden rounded-[10px] border border-border bg-card p-6 shadow-card"><span className="text-xs font-bold text-muted-foreground">0{i+1}</span><img src={mark.url} alt="" className="absolute -bottom-12 -start-12 w-64 opacity-[.07] transition-transform duration-300 group-hover:scale-110"/><h3 className="absolute bottom-6 text-2xl font-bold">{title}</h3></Link>)}</div></div></section>
       <section className="section-space bg-brand-black text-primary-foreground"><div className="turbo-container grid gap-12 md:grid-cols-12"><div className="md:col-span-7"><p className="text-sm font-bold text-primary">TURBO / STREET MATCH</p><h2 className="mt-4 text-4xl font-bold leading-tight md:text-6xl">الكورة مش 90 دقيقة.<br/>دي طريقة عيش.</h2></div><div className="md:col-span-5 md:self-end"><p className="leading-8 text-primary-foreground/65">تصميم عملي، مقاسات واضحة، وحركة حقيقية. من التمرين للمشاوير من غير ما تغيّر شخصيتك.</p><Button asChild className="mt-6" variant="outline"><Link to="/about" className="border-primary-foreground/30 bg-transparent text-primary-foreground">اعرف حكايتنا</Link></Button></div></div></section>
-      <section className="section-space"><div className="turbo-container text-center"><p className="text-sm font-bold text-primary">الجديد قريب</p><h2 className="mt-3 text-3xl font-bold md:text-5xl">أول تشكيلة TURBO</h2><p className="mx-auto mt-4 max-w-xl leading-7 text-muted-foreground">صور المنتجات والأسعار والمقاسات ستظهر هنا فور إضافتها من لوحة الإدارة — بدون منتجات وهمية.</p><Button asChild className="mt-8" size="lg"><Link to="/shop">ادخل المتجر</Link></Button></div></section>
+      <section className="section-space"><div className="turbo-container"><div className="text-center"><p className="text-sm font-bold text-primary">وصل جديد</p><h2 className="mt-3 text-3xl font-bold md:text-5xl">أول تشكيلة TURBO</h2></div>{products.length?<div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4">{products.slice(0,4).map(p=><ProductCard key={p.id} product={p}/>)}</div>:<p className="mx-auto mt-4 max-w-xl text-center leading-7 text-muted-foreground">القطع الجديدة ستظهر هنا فور نشرها.</p>}<div className="mt-8 text-center"><Button asChild size="lg"><Link to="/shop">ادخل المتجر</Link></Button></div></div></section>
     </>
   );
 }
