@@ -5,6 +5,7 @@ import {
   Heading,
   Hr,
   Html,
+  Img,
   Preview,
   Section,
   Text,
@@ -26,6 +27,8 @@ export interface OrderNotificationProps {
   total?: number
 }
 
+const MARK_URL = 'https://id-preview--2bd82060-338d-4c72-a307-cc46f95bfa5c.lovable.app/__l5e/assets-v1/71333e05-c559-4e9b-a7df-39c2ad88b0fb/turbo-mark.svg'
+
 const money = (value?: number) =>
   `${(value ?? 0).toLocaleString('en-EG', { maximumFractionDigits: 2 })} EGP`
 
@@ -45,8 +48,9 @@ function OrderNotificationEmail(props: OrderNotificationProps) {
             border: '1px solid #E9E8E5',
           }}
         >
+          <Section style={brand}><Img src={MARK_URL} width="70" height="40" alt="TURBO" style={mark}/> <Text style={brandName}>TURBO</Text></Section>
           <Heading style={{ color: '#111111', fontSize: '22px', margin: '0 0 4px' }}>
-            TURBO — طلب جديد
+            طلب جديد
           </Heading>
           <Text style={{ color: '#FF4D00', fontSize: '16px', fontWeight: 'bold', margin: '0 0 16px' }}>
             #{props.orderNumber ?? '—'}
@@ -118,3 +122,7 @@ export const template = {
     total: 1300,
   } satisfies OrderNotificationProps,
 } satisfies TemplateEntry
+
+const brand = { backgroundColor: '#111111', color: '#FF4D00', margin: '0 0 28px', padding: '18px 20px' }
+const mark = { display: 'inline-block', objectFit: 'contain' as const, verticalAlign: 'middle' }
+const brandName = { color: '#FFFFFF', display: 'inline-block', fontSize: '24px', fontWeight: 'bold' as const, marginRight: '12px', verticalAlign: 'middle' }
