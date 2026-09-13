@@ -27,7 +27,7 @@ export function SiteHeader() {
         <nav className="hidden items-center gap-6 text-sm font-semibold lg:flex">{links.map(([label,to]) => <Link key={to} to={to} activeProps={{className:"text-primary"}}>{label}</Link>)}</nav>
         <div className="flex items-center gap-1">
           <Link className="hidden p-3 lg:block" to="/search" aria-label="البحث"><Search className="size-5" /></Link>
-          <Link className="p-3" to="/auth" aria-label="الحساب"><UserRound className="size-5" /></Link>
+          <Link className="p-3" to="/account" aria-label="الحساب"><UserRound className="size-5" /></Link>
           <Link className="relative p-3" to="/cart" aria-label={`السلة، ${count} قطع`}><ShoppingBag className="size-5" />{count>0&&<span className="absolute end-1 top-1 grid min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">{count}</span>}</Link>
         </div>
       </div>
