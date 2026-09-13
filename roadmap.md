@@ -14,6 +14,7 @@
 - [ ] Responsive, accessibility, performance and security QA
 - [x] Visual rebuild: unified Arabic storefront, redesigned header and complete commerce homepage
 - [x] Unified TURBO button system from the supplied sports/editorial interaction reference
+- [x] Premium editorial redesign of the Shop page with drawer filters and responsive product grid
 
 - [x] Order email notifications to turpoclothes@gmail.com via notify.ahmedalidev.me (managed email, pending DNS)
 + [x] Fixed Google sign-in hang (navigate to /account after session) and redesigned auth + account pages
