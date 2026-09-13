@@ -107,7 +107,7 @@ function Page() {
     },
   });
 
-  const { data: wholesale } = useQuery({
+  const { data: accountRole } = useQuery({
     queryKey: ["my-wholesale", user.id],
     queryFn: async () => {
       const [{ data: roles }, { data: application }] = await Promise.all([
@@ -115,10 +115,13 @@ function Page() {
         supabase.from("wholesale_applications").select("status").eq("user_id", user.id).maybeSingle(),
       ]);
       const names = (roles ?? []).map((r) => r.role);
-      if (names.includes("wholesale")) return "approved" as const;
-      return application?.status ?? null;
+      const isAdmin = names.includes("admin") || names.includes("super_admin");
+      const status = names.includes("wholesale") ? ("approved" as const) : application?.status ?? null;
+      return { isAdmin, status };
     },
   });
+  const wholesale = accountRole?.status ?? null;
+  const isAdmin = accountRole?.isAdmin ?? false;
 
   const signOut = async () => {
     await supabase.auth.signOut();
