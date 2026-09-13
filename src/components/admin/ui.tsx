@@ -90,12 +90,12 @@ export function TableScroller({ children }: { children: ReactNode }) {
   return <div className="w-full overflow-x-auto"><table className="w-full min-w-[46rem] border-collapse text-sm">{children}</table></div>;
 }
 
-export function Th({ children, className }: { children: ReactNode; className?: string }) {
-  return <th scope="col" className={cn("border-b border-border px-4 py-2.5 text-start text-xs font-bold text-muted-foreground", className)}>{children}</th>;
+export function Th({ children, className, dir }: { children: ReactNode; className?: string; dir?: string }) {
+  return <th scope="col" dir={dir} className={cn("border-b border-border px-4 py-2.5 text-start text-xs font-bold text-muted-foreground", className)}>{children}</th>;
 }
 
-export function Td({ children, className }: { children: ReactNode; className?: string }) {
-  return <td className={cn("border-b border-border px-4 py-3 align-middle", className)}>{children}</td>;
+export function Td({ children, className, dir }: { children: ReactNode; className?: string; dir?: string }) {
+  return <td dir={dir} className={cn("border-b border-border px-4 py-3 align-middle", className)}>{children}</td>;
 }
 
 export function Pager({ page, size, total, onPage }: { page: number; size: number; total: number; onPage: (page: number) => void }) {
