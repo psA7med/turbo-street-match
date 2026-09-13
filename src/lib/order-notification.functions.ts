@@ -47,16 +47,20 @@ export const notifyOrderPlaced = createServerFn({ method: "POST" })
         shipping: order.shipping_total,
         total: order.grand_total,
       };
-    const result = await sendTemplateEmail("order-notification", "turpoclothes@gmail.com", {
+    const storeSend = sendTemplateEmail("order-notification", "turpoclothes@gmail.com", {
       templateData,
       idempotencyKey: `order-notification-${data.orderId}`,
     });
-    let customerResult: { sent: boolean; reason?: string } | null = null;
-    if (order.guest_email) {
-      customerResult = await sendTemplateEmail("order-confirmation", order.guest_email, {
-        templateData,
-        idempotencyKey: `order-confirmation-${data.orderId}`,
-      });
-    }
-    return { store: result, customer: customerResult };
+    const customerSend = order.guest_email
+      ? sendTemplateEmail("order-confirmation", order.guest_email.trim().toLowerCase(), {
+          templateData,
+          idempotencyKey: `order-confirmation-${data.orderId}`,
+        })
+      : Promise.resolve(null);
+
+    const [store, customer] = await Promise.allSettled([storeSend, customerSend]);
+    return {
+      store: store.status === "fulfilled" ? store.value : { sent: false, reason: "send_failed" },
+      customer: customer.status === "fulfilled" ? customer.value : { sent: false, reason: "send_failed" },
+    };
   });
