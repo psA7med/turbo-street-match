@@ -99,7 +99,7 @@ function OrderNotificationEmail(props: OrderNotificationProps) {
 
 export const template = {
   component: OrderNotificationEmail,
-  subject: (data: Record<string, any>) => `طلب جديد #${data.orderNumber ?? ''} — TURBO`,
+  subject: (data: Record<string, any>) => `طلب جديد #${data['orderNumber'] ?? ''} — TURBO`,
   displayName: 'إشعار طلب جديد (للإدارة)',
   to: 'turpoclothes@gmail.com',
   previewData: {
