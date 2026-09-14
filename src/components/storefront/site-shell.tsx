@@ -80,20 +80,22 @@ export function SiteHeader() {
   const { count: wishlistCount } = useWishlist();
   const { count } = useCart();
   const accountState = useAccountState();
+  const [mobileOpen, setMobileOpen] = useState(false);
   return <>
     <div className="bg-primary px-4 py-2 text-center text-xs font-semibold text-primary-foreground">توصيل لكل محافظات مصر · استبدال سهل خلال 14 يوم</div>
     <header className="sticky top-0 z-40 border-b border-primary-foreground/10 bg-brand-black text-primary-foreground">
       <div className="turbo-container grid h-16 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 lg:h-20 lg:grid-cols-[auto_minmax(20rem,1fr)_auto] lg:gap-8">
         <div className="flex items-center justify-self-start lg:hidden">
-          <Sheet><SheetTrigger asChild><Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" aria-label="فتح القائمة"><Menu /></Button></SheetTrigger>
-            <SheetContent side="right" className="w-[88%] max-w-sm"><SheetTitle className="text-start">القائمة</SheetTitle><nav className="mt-8 grid gap-1">{links.map(([label,to]) => <Link key={to} to={to} className="border-b border-border py-4 text-lg font-semibold">{label}</Link>)}<Link to="/wholesale" className="py-4 text-lg font-semibold text-primary">تجار الجملة</Link>{accountState === "admin"&&<Link to="/admin/wholesale" className="py-4 text-lg font-semibold text-primary">لوحة الإدارة — طلبات الجملة</Link>}{accountState !== "guest"&&<Link to="/account" className="py-4 text-lg font-semibold">حسابي</Link>}</nav></SheetContent>
+          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+            <SheetTrigger asChild><Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" aria-label="فتح القائمة"><Menu /></Button></SheetTrigger>
+            <SheetContent side="right" className="w-[88%] max-w-sm"><SheetTitle className="text-start">القائمة</SheetTitle><nav className="mt-8 grid gap-1">{links.map(([label,to]) => <SheetNavLink key={to} label={label} to={to} onClick={() => setMobileOpen(false)} />)}<SheetNavLink label="تجار الجملة" to="/wholesale" onClick={() => setMobileOpen(false)} className="py-4 text-lg font-semibold text-primary" />{accountState === "admin"&&<SheetNavLink label="لوحة الإدارة — طلبات الجملة" to="/admin/wholesale" onClick={() => setMobileOpen(false)} className="py-4 text-lg font-semibold text-primary" />}{accountState !== "guest"&&<SheetNavLink label="حسابي" to="/account" onClick={() => setMobileOpen(false)} className="py-4 text-lg font-semibold" />}</nav></SheetContent>
           </Sheet>
         </div>
         <div className="flex min-w-0 items-center gap-8 lg:contents">
            <Link to="/" aria-label="TURBO الصفحة الرئيسية" className="justify-self-center lg:order-first lg:justify-self-auto"><img src={darkLogo.url} alt="TURBO" className="h-9 w-32 object-contain lg:h-11 lg:w-40" /></Link>
           <div className="hidden min-w-0 lg:block">
             <div className="flex items-center gap-7">
-              <nav className="flex shrink-0 items-center gap-5 text-sm font-medium">{links.map(([label,to]) => <Link key={to} to={to} className="transition-colors duration-150 hover:text-primary" activeProps={{className:"text-primary"}}>{label}</Link>)}</nav>
+              <nav className="flex shrink-0 items-center gap-5 text-sm font-medium">{links.map(([label,to]) => <NavLink key={to} label={label} to={to} />)}</nav>
               <Link to="/search" className="flex h-11 min-w-0 flex-1 items-center gap-3 rounded-lg border border-primary-foreground/15 bg-primary-foreground/5 px-4 text-sm text-primary-foreground/60 transition-colors hover:border-primary/60"><Search className="size-5 shrink-0"/><span className="truncate">ابحث عن قطعة أو مقاس</span></Link>
             </div>
           </div>
