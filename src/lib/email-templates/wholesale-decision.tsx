@@ -6,12 +6,22 @@ export interface WholesaleDecisionProps {
   customerName?: string
   businessName?: string
   approved?: boolean
+  /** Store-inbox copy of the same decision. */
+  storeCopy?: boolean
+  accountEmail?: string
 }
 
-function WholesaleDecisionEmail({ customerName, businessName, approved }: WholesaleDecisionProps) {
+function WholesaleDecisionEmail({ customerName, businessName, approved, storeCopy, accountEmail }: WholesaleDecisionProps) {
   return (
     <EmailLayout preview={approved ? 'تم قبول طلب الجملة — TURBO' : 'تحديث على طلب الجملة — TURBO'}>
-      <Heading style={emailStyles.heading}>{approved ? 'مبروك، انت تاجر TURBO' : 'تحديث على طلب الجملة'}</Heading>
+      <Heading style={emailStyles.heading}>
+        {storeCopy ? 'نسخة إدارية — قرار طلب جملة' : approved ? 'مبروك، انت تاجر TURBO' : 'تحديث على طلب الجملة'}
+      </Heading>
+      {storeCopy ? (
+        <Text style={emailStyles.text}>
+          {`تم ${approved ? 'قبول' : 'رفض'} طلب ${businessName ?? 'نشاط'} لصاحبه ${customerName ?? '—'}${accountEmail ? ` (${accountEmail})` : ''}.`}
+        </Text>
+      ) : null}
       <Text style={emailStyles.text}>
         أهلًا {customerName ?? 'بيك'}، {approved
           ? `تم قبول طلب انضمام ${businessName ?? 'نشاطك'} لتجار TURBO. ابدأ من بوابة الجملة في حسابك وهتلاقي أسعار الجملة والحد الأدنى للكميات.`
