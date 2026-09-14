@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { getAdminOrder, saveAdminFulfillment, updateAdminOrder } from "@/lib/admin.functions";
 import { AdminPageHeader, Panel, StatusPill, TableScroller, TableState, Td, Th, dateOnly, dateTime, fulfillmentLabels, money, paymentLabels, toneForFulfillment, toneForPayment } from "@/components/admin/ui";
 
@@ -21,6 +22,8 @@ function Page() {
   const update = useServerFn(updateAdminOrder);
   const saveShipment = useServerFn(saveAdminFulfillment);
   const [busy, setBusy] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [reason, setReason] = useState("");
   const query = useQuery({ queryKey: ["admin-order", id], queryFn: () => load({ data: { id } }), retry: false });
   const order = query.data?.order;
   const profile = query.data?.profile;
