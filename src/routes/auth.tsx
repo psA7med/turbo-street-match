@@ -175,10 +175,10 @@ function AuthPage() {
           {confirmationEmail ? <div className="mt-8">
             <span className="grid size-14 place-items-center rounded-lg bg-primary/10 text-primary"><MailCheck className="size-7" /></span>
             <h1 className="mt-5 text-3xl font-extrabold">أكد بريدك</h1>
-            <p className="mt-2 text-sm leading-7 text-muted-foreground">اكتب الكود المكوّن من 6 أرقام اللي بعتناه إلى <span dir="ltr" className="font-semibold text-foreground">{confirmationEmail}</span></p>
+            <p className="mt-2 text-sm leading-7 text-muted-foreground">اكتب كود التأكيد كاملًا زي ما وصلك في الرسالة إلى <span dir="ltr" className="font-semibold text-foreground">{confirmationEmail}</span></p>
             <form onSubmit={verifyCode} className="mt-6 grid gap-4">
-              <Input aria-label="كود التأكيد" required inputMode="numeric" autoComplete="one-time-code" maxLength={6} dir="ltr" className="h-14 text-center text-2xl font-bold tracking-[0.45em]" value={confirmationCode} onChange={(event) => setConfirmationCode(event.target.value.replace(/\D/g, "").slice(0, 6))} />
-              <Button type="submit" size="lg" disabled={loading || confirmationCode.length !== 6}>{loading ? <LoaderCircle className="animate-spin" /> : <CheckCircle2 />} تأكيد الحساب</Button>
+              <Input aria-label="كود التأكيد" required inputMode="numeric" autoComplete="one-time-code" minLength={6} maxLength={10} dir="ltr" className="h-14 text-center text-2xl font-bold tracking-[0.35em]" value={confirmationCode} onChange={(event) => setConfirmationCode(event.target.value.replace(/\D/g, "").slice(0, 10))} />
+              <Button type="submit" size="lg" disabled={loading || confirmationCode.length < 6}>{loading ? <LoaderCircle className="animate-spin" /> : <CheckCircle2 />} تأكيد الحساب</Button>
               <Button type="button" variant="ghost" onClick={resendCode} disabled={loading}>إعادة إرسال الكود</Button>
               <Button type="button" variant="link" onClick={() => { setConfirmationEmail(""); setConfirmationCode(""); }} disabled={loading}>تغيير البريد</Button>
             </form>
