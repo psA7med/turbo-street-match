@@ -51,5 +51,29 @@ export const updateWholesaleApplicationStatus = createServerFn({ method: "POST" 
       });
       if (roleError) throw roleError;
     }
+
+    if (data.status !== "pending") {
+      try {
+        const [{ data: authUser }, { data: profile }, { data: details }] = await Promise.all([
+          supabaseAdmin.auth.admin.getUserById(application.user_id),
+          supabaseAdmin.from("profiles").select("full_name").eq("id", application.user_id).maybeSingle(),
+          supabaseAdmin.from("wholesale_applications").select("business_name,contact_name").eq("id", data.applicationId).maybeSingle(),
+        ]);
+        const to = authUser?.user?.email;
+        if (to) {
+          const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+          await sendTemplateEmail("wholesale-decision", to, {
+            templateData: {
+              customerName: profile?.full_name ?? details?.contact_name ?? undefined,
+              businessName: details?.business_name ?? undefined,
+              approved: data.status === "approved",
+            },
+            idempotencyKey: `wholesale-decision-${data.applicationId}-${data.status}`,
+          });
+        }
+      } catch (error) {
+        console.error("wholesale decision email failed", error);
+      }
+    }
     return application;
   });

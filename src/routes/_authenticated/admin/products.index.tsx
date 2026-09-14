@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { getAdminProductFormData, listAdminProducts, setAdminProductStatus } from "@/lib/admin.functions";
 import { AdminPageHeader, Pager, Panel, StatusPill, TableScroller, TableState, Td, Th, dateOnly, money, statusLabels } from "@/components/admin/ui";
 
-export const Route = createFileRoute("/_authenticated/admin/products")({ component: Page });
+export const Route = createFileRoute("/_authenticated/admin/products/")({ component: Page });
 
 const ANY = "all";
 
