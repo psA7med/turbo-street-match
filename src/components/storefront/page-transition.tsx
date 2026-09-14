@@ -108,9 +108,12 @@ export function startNavTransition(navigate: () => void) {
 
   setNav("enter");
 
-  // نبدأ الخروج لليمين وننقل المستخدم في نفس اللحظة
-  const exitAndNavigate = window.setTimeout(() => {
+  // ننقل المستخدم فورًا عشان الأنيميشن يكمل فوق الصفحة الجديدة
+  const go = window.setTimeout(() => {
     navigate();
+  }, 60);
+
+  const exit = window.setTimeout(() => {
     setNav("exit");
   }, 300);
 
@@ -121,8 +124,9 @@ export function startNavTransition(navigate: () => void) {
     navTimers = [];
   }, 560);
 
-  navTimers = [exitAndNavigate, idle];
+  navTimers = [go, exit, idle];
 }
+
 
 export function NavTransition() {
   const [state, setState] = useState<NavState>(navCurrent);
