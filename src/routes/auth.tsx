@@ -46,19 +46,83 @@ function AuthPage() {
   const [confirmationCode, setConfirmationCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [reset, setReset] = useState<null | { stage: "request" | "code" | "choice" | "password"; email: string }>(null);
+  const [resetCode, setResetCode] = useState("");
+  const holdRedirect = useRef(false);
   const navigate = useNavigate();
 
   // بعد الرجوع من جوجل: لو الجلسة اتعملت انقل مباشرة للحساب
   useEffect(() => {
     let active = true;
     supabase.auth.getUser().then(({ data }) => {
-      if (active && data.user) navigate({ to: "/account", replace: true });
+      if (active && !holdRedirect.current && data.user) navigate({ to: "/account", replace: true });
     });
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (active && session?.user) navigate({ to: "/account", replace: true });
+      if (active && !holdRedirect.current && session?.user) navigate({ to: "/account", replace: true });
     });
     return () => { active = false; listener.subscription.unsubscribe(); };
   }, [navigate]);
+
+  const requestReset = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const email = String(new FormData(event.currentTarget).get("resetEmail") ?? "").trim().toLowerCase();
+    setLoading(true);
+    holdRedirect.current = true;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + "/auth" });
+    setLoading(false);
+    if (error) { toast.error("تعذر إرسال كود الاستعادة", { description: error.message }); return; }
+    setReset({ stage: "code", email });
+    setResetCode("");
+    toast.success("بعتنا لك كود استعادة على بريدك");
+  };
+
+  const verifyResetCode = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!reset) return;
+    setLoading(true);
+    const { error } = await supabase.auth.verifyOtp({ email: reset.email, token: resetCode.replace(/\D/g, ""), type: "recovery" });
+    setLoading(false);
+    if (error) { toast.error("الكود غير صحيح أو انتهت صلاحيته", { description: "اطلب كود جديد وجرب تاني." }); return; }
+    setReset({ stage: "choice", email: reset.email });
+    toast.success("تم التحقق من بريدك");
+  };
+
+  const resendResetCode = async () => {
+    if (!reset) return;
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(reset.email, { redirectTo: window.location.origin + "/auth" });
+    setLoading(false);
+    error
+      ? toast.error("تعذر إعادة إرسال الكود", { description: error.message })
+      : toast.success("بعتنا لك كود جديد", { description: "استخدم آخر كود فقط." });
+  };
+
+  const savePassword = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const fd = new FormData(event.currentTarget);
+    const password = String(fd.get("newPassword") ?? "");
+    if (password !== String(fd.get("newPasswordConfirm") ?? "")) { toast.error("كلمتا المرور غير متطابقتين"); return; }
+    setLoading(true);
+    const { error } = await supabase.auth.updateUser({ password });
+    setLoading(false);
+    if (error) { toast.error("تعذر تغيير كلمة المرور", { description: error.message }); return; }
+    toast.success("تم تغيير كلمة المرور");
+    holdRedirect.current = false;
+    setReset(null);
+    navigate({ to: "/account", replace: true });
+  };
+
+  const enterAccount = () => {
+    holdRedirect.current = false;
+    setReset(null);
+    navigate({ to: "/account", replace: true });
+  };
+
+  const closeReset = () => {
+    holdRedirect.current = false;
+    setReset(null);
+    setResetCode("");
+  };
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
