@@ -42,7 +42,7 @@ function Page() {
     event.preventDefault();
     setLoading(true);
     const form = new FormData(event.currentTarget);
-    const { data, error } = await supabase.from("wholesale_applications").insert({
+    const payload = {
       user_id: user.id,
       business_name: String(form.get("business_name")),
       contact_name: String(form.get("contact_name")),
@@ -52,7 +52,11 @@ function Page() {
       business_type: String(form.get("business_type") || "") || null,
       tax_registration: String(form.get("tax_registration") || "") || null,
       notes: String(form.get("notes") || "") || null,
-    }).select("id").single();
+    };
+    const rejected = application?.status === "rejected";
+    const { data, error } = rejected
+      ? await supabase.from("wholesale_applications").update({ ...payload, status: "pending", reviewed_by: null, reviewed_at: null }).eq("id", application.id).select("id").single()
+      : await supabase.from("wholesale_applications").insert(payload).select("id").single();
     if (error || !data) {
       setLoading(false);
       const duplicate = error?.code === "23505";
