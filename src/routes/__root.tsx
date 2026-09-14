@@ -134,6 +134,7 @@ function RootComponent() {
         {!isAdmin && <SiteFooter />}
       </div>
       <PageTransition />
+      <NavTransition />
       <SmoothReveal />
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
