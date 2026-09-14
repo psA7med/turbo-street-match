@@ -153,6 +153,7 @@ function Page() {
   });
   const wholesale = accountRole?.status ?? null;
   const isAdmin = accountRole?.isAdmin ?? false;
+  const isDealer = wholesale === "approved";
 
   const signOut = async () => {
     await supabase.auth.signOut();
