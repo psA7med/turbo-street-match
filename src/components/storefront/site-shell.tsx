@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { ChevronDown, Heart, LogIn, Menu, Search, ShoppingBag, Store, UserRound } from "lucide-react";
 import { useWishlist } from "@/hooks/use-wishlist";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import darkLogo from "@/assets/turbo-logo-dark.svg.asset.json";
 import mark from "@/assets/turbo-mark.svg.asset.json";
 import { useCart } from "@/lib/cart";
 import { supabase } from "@/integrations/supabase/client";
+import { startNavTransition } from "@/components/storefront/page-transition";
 
 const links = [
   ["المتجر", "/shop"], ["الفئات", "/categories"], ["وصل جديد", "/new"],
