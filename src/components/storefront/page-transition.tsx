@@ -14,8 +14,11 @@ export function PageTransition() {
   const [active, setActive] = useState(false);
   const activeRef = useRef(false);
   const timeoutRef = useRef<number | undefined>(undefined);
+  const lastPathRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
+    lastPathRef.current = router.state.location.pathname;
+
     const finish = () => {
       activeRef.current = false;
       setActive(false);
@@ -23,8 +26,9 @@ export function PageTransition() {
     };
 
     const unsubscribe = router.subscribe("onBeforeNavigate", (event) => {
-      const fromPath = event.fromLocation?.pathname;
+      const fromPath = event.fromLocation?.pathname ?? lastPathRef.current;
       const toPath = event.toLocation.pathname;
+      lastPathRef.current = toPath;
 
       if (
         !event.pathChanged ||
