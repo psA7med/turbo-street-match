@@ -75,9 +75,11 @@ function Page() {
             <p className="mt-4 text-sm text-primary-foreground/60">{totalQuantity} قطعة في السلة</p>
             {missing > 0 && <p className="mt-3 rounded-lg bg-primary/20 p-3 text-sm font-bold">ناقص {missing} قطعة للوصول لأقل كمية جملة ({minQuantity} قطع).</p>}
             <p className="mt-4 text-sm leading-6 text-primary-foreground/60">الشحن والخصومات تظهر في الخطوة التالية حسب العنوان.</p>
-            <Button asChild size="lg" className="mt-6 w-full" disabled={missing > 0}>
-              <Link to="/checkout" disabled={missing > 0}>إتمام الطلب</Link>
-            </Button>
+            {missing > 0 ? (
+              <Button size="lg" className="mt-6 w-full" disabled>إتمام الطلب</Button>
+            ) : (
+              <Button asChild size="lg" className="mt-6 w-full"><Link to="/checkout">إتمام الطلب</Link></Button>
+            )}
           </aside>
         </div>
       )}
