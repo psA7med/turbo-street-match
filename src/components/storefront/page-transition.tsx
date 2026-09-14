@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import mark from "@/assets/turbo-mark.svg.asset.json";
-import darkLogo from "@/assets/turbo-logo-dark.svg.asset.json";
+import navLogo from "@/assets/turbo-logo.svg.asset.json";
 
 // انتقال TURBO مخصص للعمليات اللي بتاخد وقت (تأكيد الطلب، إلغاء الطلب…)
 // ومش بيشتغل على التنقل العادي بين الصفحات.
@@ -112,14 +112,14 @@ export function startNavTransition(navigate: () => void) {
   const exitAndNavigate = window.setTimeout(() => {
     navigate();
     setNav("exit");
-  }, 440);
+  }, 300);
 
   // نرجع للحالة الطبيعية بعد ما الانتقال يخلص
   const idle = window.setTimeout(() => {
     setNav("idle");
     navRunning = false;
     navTimers = [];
-  }, 940);
+  }, 560);
 
   navTimers = [exitAndNavigate, idle];
 }
@@ -146,7 +146,7 @@ export function NavTransition() {
       aria-label="جاري التنقل"
       data-testid="turbo-nav-transition"
     >
-      <img className="turbo-nav-transition-logo" src={darkLogo.url} alt="TURBO" />
+      <img className="turbo-nav-transition-logo" src={navLogo.url} alt="TURBO" />
     </div>
   );
 }

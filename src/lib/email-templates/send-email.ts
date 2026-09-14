@@ -13,6 +13,8 @@ const SENDER_DOMAIN = "notify.ahmedalidev.me"
 // FROM_DOMAIN is the domain shown in the From: header (e.g., "example.com").
 // Can be the root domain when display_from_root is enabled — this is cosmetic only.
 const FROM_DOMAIN = "ahmedalidev.me"
+// أي رد من العميل على إيميلاتنا يوصل على بريد المتجر
+const DEFAULT_REPLY_TO = "turpoclothes@gmail.com"
 
 export type SendTemplateEmailResult =
   | { sent: true }
@@ -77,7 +79,7 @@ export async function sendTemplateEmail(
         purpose: 'transactional',
         label: templateName,
         idempotency_key: options.idempotencyKey || crypto.randomUUID(),
-        ...(options.replyTo ? { reply_to: options.replyTo } : {}),
+        reply_to: options.replyTo || DEFAULT_REPLY_TO,
       },
       { apiKey, sendUrl: process.env['LOVABLE_SEND_URL'] }
     )
