@@ -137,6 +137,18 @@ function Page() {
                 </form>
               </Panel>
 
+              <Panel title="إبلاغ العميل بالبريد">
+                <div className="grid gap-3 p-4">
+                  <p className="text-xs text-muted-foreground">
+                    يبعت للعميل الحالة الحالية ({fulfillmentLabels[order.fulfillment_status] ?? order.fulfillment_status}) وبيانات الشحن، ونسخة توصل لبريد المتجر.
+                  </p>
+                  <label className="grid gap-1.5 text-xs font-bold" htmlFor="order-message">رسالة إضافية للعميل (اختياري)</label>
+                  <Textarea id="order-message" rows={3} maxLength={600} value={message} onChange={(event) => setMessage(event.target.value)} placeholder="مثال: الشحنة خرجت من المخزن وهتوصلك بكرة." />
+                  <Button size="sm" disabled={sending} onClick={() => void notifyCustomer()}>{sending ? "جاري الإرسال…" : "إرسال التحديث للعميل"}</Button>
+                  <p dir="ltr" className="text-start text-xs text-muted-foreground">{order.guest_email || "—"}</p>
+                </div>
+              </Panel>
+
               <Panel title="ملاحظة الطلب">
                 <form onSubmit={submitNote} className="grid gap-3 p-4">
                   <label className="grid gap-1.5 text-xs font-bold" htmlFor="order-note">ملاحظة داخلية أو ملاحظة العميل</label>
