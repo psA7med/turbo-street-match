@@ -350,7 +350,7 @@
   will-change: transform, opacity;
 }
 
-.turbo-nav-transition[data-state="enter"] .turbo-nav-transition-logo {
+.turbo-nav-transition .turbo-nav-transition-logo {
   animation: turbo-nav-logo 520ms linear both;
 }
 
