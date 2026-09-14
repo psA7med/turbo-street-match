@@ -18,7 +18,12 @@ const emptyFields:CheckoutFields={customerName:"",phone:"",email:"",governorate:
 export const Route=createFileRoute("/checkout")({head:()=>({meta:[{title:"إتمام الطلب — TURBO"},{name:"description",content:"أدخل بيانات التوصيل واختر طريقة الدفع لإتمام طلب TURBO."},{property:"og:title",content:"إتمام طلب TURBO"},{property:"og:description",content:"خطوات واضحة وآمنة لإتمام الطلب."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary"}]}),component:Page});
 
 function Page(){
-  const {lines,subtotal}=useCart();
+  const {lines}=useCart();
+  const {approved:isDealer,price:dealerPrice,minQuantity}=useWholesale();
+  const pricedLines=lines.map(line=>({...line,price:dealerPrice(line.variantId,line.quantity,line.unitPrice)}));
+  const subtotal=pricedLines.reduce((sum,line)=>sum+line.price*line.quantity,0);
+  const totalQuantity=pricedLines.reduce((sum,line)=>sum+line.quantity,0);
+  const missingQuantity=isDealer?Math.max(0,minQuantity-totalQuantity):0;
   const [fields,setFields]=useState(emptyFields);
   const [isSubmitting,setIsSubmitting]=useState(false);
   const [order,setOrder]=useState<OrderResult|null>(null);
