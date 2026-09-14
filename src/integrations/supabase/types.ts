@@ -958,6 +958,19 @@ export type Database = {
         }
         Returns: Json
       }
+      place_wholesale_order: {
+        Args: {
+          p_city: string
+          p_customer_name: string
+          p_email: string
+          p_governorate: string
+          p_items: Json
+          p_landmark: string
+          p_phone: string
+          p_street_address: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       app_role:

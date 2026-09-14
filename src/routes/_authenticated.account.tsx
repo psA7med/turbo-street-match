@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Check, ChevronLeft, CircleUserRound, Home, ImagePlus, LoaderCircle, LogOut, MapPin, Package, Pencil, Plus, ShieldCheck, Store, Trash2, UserRound, XCircle } from "lucide-react";
+import { BadgeCheck, Check, ChevronLeft, CircleUserRound, Home, ImagePlus, LoaderCircle, LogOut, MapPin, Package, Pencil, Plus, ShieldCheck, Store, Trash2, UserRound, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { money } from "@/components/storefront/catalog";
 import { cancelMyOrder } from "@/lib/order-cancel.functions";
 import { withTurboOverlay } from "@/components/storefront/page-transition";
+import { WHOLESALE_MIN_QUANTITY } from "@/hooks/use-wholesale";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/account")({
@@ -153,6 +154,7 @@ function Page() {
   });
   const wholesale = accountRole?.status ?? null;
   const isAdmin = accountRole?.isAdmin ?? false;
+  const isDealer = wholesale === "approved";
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -216,7 +218,7 @@ function Page() {
   };
 
   const wholesaleCard = wholesale === "approved"
-    ? { to: "/wholesale" as const, title: "بوابة تجار الجملة", desc: "أسعار الجملة وطلبات الكمية" }
+    ? { to: "/wholesale" as const, title: "بوابة تجار الجملة", desc: `أسعار الجملة مطبقة — أقل كمية ${WHOLESALE_MIN_QUANTITY} قطع` }
     : wholesale === "pending"
       ? { to: "/wholesale-apply" as const, title: "طلب الجملة قيد المراجعة", desc: "هنوافيك بالنتيجة قريبًا" }
       : { to: "/wholesale-apply" as const, title: "قدّم كتاجر جملة", desc: "افتح أسعار الجملة لمحلك" };
@@ -227,13 +229,13 @@ function Page() {
 
   return (
     <div className="min-h-[70vh] bg-off-white">
-      <section className="bg-brand-black text-primary-foreground">
+      <section className={isDealer ? "bg-brand-black text-primary-foreground border-b-4 border-primary" : "bg-brand-black text-primary-foreground"}>
         <div className="turbo-container flex flex-col gap-6 py-9 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-5">
             <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-primary text-xl font-bold text-primary-foreground">
               {avatarUrl ? <img src={avatarUrl} alt={displayName} className="size-full object-cover" referrerPolicy="no-referrer"/> : <span>{displayName.slice(0, 2)}</span>}
             </div>
-            <div><p className="text-xs font-bold text-primary">MY TURBO</p><h1 className="mt-1 text-3xl font-extrabold sm:text-4xl">أهلاً، {displayName.split(" ")[0]}</h1><p dir="ltr" className="mt-1 text-start text-sm text-primary-foreground/60">{user.email}</p></div>
+            <div><p className="text-xs font-bold text-primary">MY TURBO</p><h1 className="mt-1 flex flex-wrap items-center gap-3 text-3xl font-extrabold sm:text-4xl">أهلاً، {displayName.split(" ")[0]}{isDealer && <span className="rounded-full bg-primary px-3 py-1 text-xs font-bold text-primary-foreground">تاجر جملة</span>}</h1><p dir="ltr" className="mt-1 text-start text-sm text-primary-foreground/60">{user.email}</p></div>
           </div>
           <Button variant="outline" className="border-primary-foreground/25 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" onClick={signOut}><LogOut /> تسجيل الخروج</Button>
         </div>
@@ -248,6 +250,15 @@ function Page() {
             </div>
             <ChevronLeft className="size-5 text-primary" aria-hidden="true" />
           </Link>
+        )}
+        {isDealer && (
+          <div className="mb-4 flex items-start gap-4 rounded-[10px] border-2 border-primary bg-primary/10 p-5">
+            <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground"><BadgeCheck className="size-5"/></span>
+            <div>
+              <strong className="block">تم قبولك كتاجر جملة في TURBO</strong>
+              <p className="mt-1 text-sm text-muted-foreground">تم تطبيق أسعار الجملة على حسابك، وأقل كمية للطلب {WHOLESALE_MIN_QUANTITY} منتجات — مختلفة أو من نفس الموديل — علشان تقدر تكمّل الطلب.</p>
+            </div>
+          </div>
         )}
         <Link to={wholesaleCard.to} className="flex items-center justify-between gap-4 rounded-[10px] border bg-card p-5 transition-colors hover:border-primary">
           <div className="flex items-center gap-4">
