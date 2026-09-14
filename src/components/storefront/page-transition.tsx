@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import mark from "@/assets/turbo-mark.svg.asset.json";
+import darkLogo from "@/assets/turbo-logo-dark.svg.asset.json";
 
 // انتقال TURBO مخصص للعمليات اللي بتاخد وقت (تأكيد الطلب، إلغاء الطلب…)
 // ومش بيشتغل على التنقل العادي بين الصفحات.
@@ -81,6 +82,71 @@ export function PageTransition() {
       data-testid="turbo-page-transition"
     >
       <img className="turbo-page-transition-mark" src={mark.url} alt="" />
+    </div>
+  );
+}
+
+// ---------- انتقال سريع للقائمة العلوية: الشعار يدخل من الشمال ويخرج لليمين ----------
+
+type NavState = "idle" | "enter" | "exit";
+const navListeners = new Set<(state: NavState) => void>();
+let navCurrent: NavState = "idle";
+let navTimers: number[] = [];
+let navRunning = false;
+
+function setNav(state: NavState) {
+  navCurrent = state;
+  navListeners.forEach((listener) => listener(state));
+}
+
+/** يشغّل انتقال TURBO السريع عند الضغط على روابط القائمة العلوية. */
+export function startNavTransition(navigate: () => void) {
+  if (navRunning) return;
+  navRunning = true;
+  navTimers.forEach((id) => window.clearTimeout(id));
+  navTimers = [];
+
+  setNav("enter");
+
+  // نبدأ الخروج لليمين وننقل المستخدم في نفس اللحظة
+  const exitAndNavigate = window.setTimeout(() => {
+    navigate();
+    setNav("exit");
+  }, 440);
+
+  // نرجع للحالة الطبيعية بعد ما الانتقال يخلص
+  const idle = window.setTimeout(() => {
+    setNav("idle");
+    navRunning = false;
+    navTimers = [];
+  }, 940);
+
+  navTimers = [exitAndNavigate, idle];
+}
+
+export function NavTransition() {
+  const [state, setState] = useState<NavState>(navCurrent);
+
+  useEffect(() => {
+    navListeners.add(setState);
+    setState(navCurrent);
+    return () => {
+      navListeners.delete(setState);
+    };
+  }, []);
+
+  if (state === "idle") return null;
+
+  return (
+    <div
+      className="turbo-nav-transition"
+      data-state={state}
+      role="status"
+      aria-live="polite"
+      aria-label="جاري التنقل"
+      data-testid="turbo-nav-transition"
+    >
+      <img className="turbo-nav-transition-logo" src={darkLogo.url} alt="TURBO" />
     </div>
   );
 }
