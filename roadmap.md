@@ -9,6 +9,7 @@
 - [x] Auth, account summary and order history
 - [ ] Profile editing, addresses and detailed order tracking
 - [x] Protected wholesale application and application status
+- [x] Wholesale flow: one application per account, dealer badge/theme in account, wholesale prices applied in cart/checkout, 7-piece minimum enforced server-side, admin wholesale price management
 - [ ] Wholesale approval administration and approved dealer portal
 - [ ] Admin/CMS architecture and core management screens
 - [ ] Responsive, accessibility, performance and security QA
