@@ -12,6 +12,9 @@ export interface OrderStatusProps {
   trackingNumber?: string
   eta?: string
   total?: number
+  /** Store-inbox copy of the same update. */
+  storeCopy?: boolean
+  email?: string
 }
 
 const money = (value?: number) => `${(value ?? 0).toLocaleString('ar-EG')} جنيه`
