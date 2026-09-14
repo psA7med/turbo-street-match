@@ -341,6 +341,11 @@
   overflow: hidden;
   background: transparent;
   pointer-events: none;
+  visibility: hidden;
+}
+
+.turbo-nav-transition:not([data-state="idle"]) {
+  visibility: visible;
 }
 
 .turbo-nav-transition-logo {
@@ -350,8 +355,12 @@
   will-change: transform, opacity;
 }
 
-.turbo-nav-transition .turbo-nav-transition-logo {
-  animation: turbo-nav-logo 520ms linear both;
+.turbo-nav-transition-logo {
+  opacity: 0;
+}
+
+.turbo-nav-transition:not([data-state="idle"]) .turbo-nav-transition-logo {
+  animation: turbo-nav-logo 650ms linear both;
 }
 
 @keyframes blur-out-up {
