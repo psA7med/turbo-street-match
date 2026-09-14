@@ -76,7 +76,7 @@ function Page() {
     await refetch();
   };
 
-  if (application) return (
+  if (application && application.status !== "rejected") return (
     <div className="turbo-container section-space min-h-[60vh] text-center">
       <CheckCircle2 className="mx-auto size-14 text-primary" />
       <h1 className="mt-5 text-4xl font-bold">طلبك وصل</h1>
