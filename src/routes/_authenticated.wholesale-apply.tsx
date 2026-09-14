@@ -92,6 +92,7 @@ function Page() {
         <p className="font-bold text-primary">WHOLESALE APPLICATION</p>
         <h1 className="mt-2 text-4xl font-bold md:text-6xl">بيانات نشاطك</h1>
         <p className="mt-4 leading-7 text-muted-foreground">هنراجع البيانات قبل فتح أسعار وطلبات الجملة.</p>
+        {application?.status === "rejected" && <p className="mt-5 rounded-[10px] border border-border bg-off-white p-4 text-sm leading-7">طلبك السابق ({application.business_name}) لم تتم الموافقة عليه. عدّل بياناتك وابعتها تاني للمراجعة.</p>}
         <form onSubmit={submit} className="mt-8 grid gap-4 sm:grid-cols-2">
           <label className="grid gap-2 text-sm font-bold">اسم النشاط<Input name="business_name" required /></label>
           <label className="grid gap-2 text-sm font-bold">اسم المسؤول<Input name="contact_name" required /></label>
