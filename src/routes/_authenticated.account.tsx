@@ -1,14 +1,19 @@
 import { useState, type FormEvent } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, ChevronLeft, CircleUserRound, Home, ImagePlus, LoaderCircle, LogOut, MapPin, Package, Pencil, Plus, ShieldCheck, Store, Trash2, UserRound } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { Check, ChevronLeft, CircleUserRound, Home, ImagePlus, LoaderCircle, LogOut, MapPin, Package, Pencil, Plus, ShieldCheck, Store, Trash2, UserRound, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { money } from "@/components/storefront/catalog";
+import { cancelMyOrder } from "@/lib/order-cancel.functions";
+import { withTurboOverlay } from "@/components/storefront/page-transition";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/account")({
