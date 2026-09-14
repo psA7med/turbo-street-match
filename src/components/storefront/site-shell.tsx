@@ -59,12 +59,12 @@ function NavLink({ label, to }: { label: string; to: string }) {
   );
 }
 
-function SheetNavLink({ label, to, onClick }: { label: string; to: string; onClick?: () => void }) {
+function SheetNavLink({ label, to, onClick, className }: { label: string; to: string; onClick?: () => void; className?: string }) {
   const navigate = useNavigate();
   return (
     <Link
       to={to}
-      className="border-b border-border py-4 text-lg font-semibold"
+      className={className ?? "border-b border-border py-4 text-lg font-semibold"}
       onClick={(e) => {
         e.preventDefault();
         onClick?.();
