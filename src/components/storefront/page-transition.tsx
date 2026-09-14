@@ -1,79 +1,85 @@
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import mark from "@/assets/turbo-mark.svg.asset.json";
 
-const STANDARD_DURATION = 520;
-const REDUCED_DURATION = 140;
+// انتقال TURBO مخصص للعمليات اللي بتاخد وقت (تأكيد الطلب، إلغاء الطلب…)
+// ومش بيشتغل على التنقل العادي بين الصفحات.
 
-function isStorefrontPath(pathname: string) {
-  return pathname !== "/admin" && !pathname.startsWith("/admin/");
+const FADE_OUT = 220;
+const MIN_VISIBLE = 420;
+
+type State = "idle" | "enter" | "exit";
+const listeners = new Set<(state: State) => void>();
+let current: State = "idle";
+let shownAt = 0;
+let exitTimer: number | undefined;
+
+function set(state: State) {
+  current = state;
+  listeners.forEach((listener) => listener(state));
+}
+
+/** يفتح الشاشة الانتقالية ويرجّع دالة لإغلاقها. */
+export function startTurboOverlay() {
+  if (exitTimer !== undefined) {
+    window.clearTimeout(exitTimer);
+    exitTimer = undefined;
+  }
+  if (current !== "enter") {
+    shownAt = Date.now();
+    set("enter");
+  }
+  let closed = false;
+  return () => {
+    if (closed) return;
+    closed = true;
+    const wait = Math.max(0, MIN_VISIBLE - (Date.now() - shownAt));
+    window.setTimeout(() => {
+      set("exit");
+      exitTimer = window.setTimeout(() => {
+        exitTimer = undefined;
+        set("idle");
+      }, FADE_OUT);
+    }, wait);
+  };
+}
+
+/** يشغّل عملية طويلة والشاشة الانتقالية ظاهرة طول مدتها. */
+export async function withTurboOverlay<T>(action: () => Promise<T>): Promise<T> {
+  const stop = startTurboOverlay();
+  try {
+    return await action();
+  } finally {
+    stop();
+  }
 }
 
 export function PageTransition() {
-  const router = useRouter();
-  const [active, setActive] = useState(false);
-  const activeRef = useRef(false);
-  const timeoutRef = useRef<number | undefined>(undefined);
-  const lastPathRef = useRef<string | undefined>(undefined);
+  const [state, setState] = useState<State>(current);
 
   useEffect(() => {
-    lastPathRef.current = window.location.pathname;
-
-    const finish = () => {
-      activeRef.current = false;
-      setActive(false);
-      document.documentElement.removeAttribute("data-turbo-transition");
-    };
-
-    const start = (fromPath: string | undefined, toPath: string) => {
-      if (
-        !fromPath ||
-        fromPath === toPath ||
-        !isStorefrontPath(fromPath) ||
-        !isStorefrontPath(toPath) ||
-        activeRef.current
-      ) {
-        return;
-      }
-
-      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      activeRef.current = true;
-      setActive(true);
-      document.documentElement.setAttribute("data-turbo-transition", reducedMotion ? "reduced" : "active");
-      timeoutRef.current = window.setTimeout(finish, reducedMotion ? REDUCED_DURATION : STANDARD_DURATION);
-    };
-
-    const handleDocumentClick = (event: MouseEvent) => {
-      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-      const target = event.target;
-      const anchor = target instanceof Element ? target.closest("a[href]") : null;
-      if (!(anchor instanceof HTMLAnchorElement) || anchor.target || anchor.hasAttribute("download")) return;
-
-      const destination = new URL(anchor.href, window.location.href);
-      if (destination.origin !== window.location.origin) return;
-      start(window.location.pathname, destination.pathname);
-    };
-
-    const unsubscribe = router.subscribe("onBeforeNavigate", (event) => {
-      const fromPath = event.fromLocation?.pathname ?? lastPathRef.current;
-      const toPath = event.toLocation.pathname;
-      lastPathRef.current = toPath;
-      if (event.pathChanged) start(fromPath, toPath);
-    });
-    document.addEventListener("click", handleDocumentClick, true);
-
+    listeners.add(setState);
+    setState(current);
     return () => {
-      unsubscribe();
-      document.removeEventListener("click", handleDocumentClick, true);
-      if (timeoutRef.current !== undefined) window.clearTimeout(timeoutRef.current);
-      document.documentElement.removeAttribute("data-turbo-transition");
+      listeners.delete(setState);
     };
-  }, [router]);
+  }, []);
 
-  if (!active) return null;
+  useEffect(() => {
+    if (state === "idle") document.documentElement.removeAttribute("data-turbo-transition");
+    else document.documentElement.setAttribute("data-turbo-transition", state);
+  }, [state]);
+
+  if (state === "idle") return null;
 
   return (
-    <div className="turbo-page-transition" aria-hidden="true" data-testid="turbo-page-transition">
+    <div
+      className="turbo-page-transition"
+      data-state={state}
+      role="status"
+      aria-live="polite"
+      aria-label="جاري التنفيذ"
+      data-testid="turbo-page-transition"
+    >
       <img className="turbo-page-transition-mark" src={mark.url} alt="" />
     </div>
   );
