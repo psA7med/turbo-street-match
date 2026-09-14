@@ -53,10 +53,11 @@ function Page(){
     if(!/^01[0125][0-9]{8}$/.test(fields.phone)){toast.error("راجع رقم الموبايل",{description:"اكتب رقم مصري صحيح مكوّن من 11 رقم."});return;}
     if(!fields.email.trim()){toast.error("اكتب بريدك الإلكتروني",{description:"هنبعت عليه تأكيد الطلب."});return;}
     if(!selectedZone){toast.error("اختار محافظة متاحة للشحن");return;}
+    if(missingQuantity>0){toast.error("أقل كمية لطلب الجملة "+minQuantity+" قطع",{description:`ناقص ${missingQuantity} قطعة — تقدر تكمّلهم من نفس الموديل أو موديلات مختلفة.`});return;}
     setIsSubmitting(true);
     const stopOverlay=startTurboOverlay();
-    const {data,error}=await supabase.rpc("place_retail_order",{p_customer_name:fields.customerName.trim(),p_phone:fields.phone,p_email:fields.email.trim(),p_governorate:fields.governorate,p_city:fields.city.trim(),p_street_address:fields.streetAddress.trim(),p_landmark:fields.landmark.trim(),p_items:lines.map(line=>({variant_id:line.variantId,quantity:line.quantity}))});
-    if(error){stopOverlay();setIsSubmitting(false);const unavailable=error.message.includes("insufficient_stock")||error.message.includes("variant_unavailable");toast.error(unavailable?"قطعة في طلبك لم تعد متاحة":"تعذر تأكيد الطلب",{description:unavailable?"ارجع للسلة وحدّث اختياراتك.":"راجع البيانات وحاول مرة أخرى."});return;}
+    const {data,error}=await supabase.rpc(isDealer?"place_wholesale_order":"place_retail_order",{p_customer_name:fields.customerName.trim(),p_phone:fields.phone,p_email:fields.email.trim(),p_governorate:fields.governorate,p_city:fields.city.trim(),p_street_address:fields.streetAddress.trim(),p_landmark:fields.landmark.trim(),p_items:lines.map(line=>({variant_id:line.variantId,quantity:line.quantity}))});
+    if(error){stopOverlay();setIsSubmitting(false);const unavailable=error.message.includes("insufficient_stock")||error.message.includes("variant_unavailable");const minimum=error.message.includes("wholesale_minimum_quantity");toast.error(minimum?`أقل كمية لطلب الجملة ${minQuantity} قطع`:unavailable?"قطعة في طلبك لم تعد متاحة":"تعذر تأكيد الطلب",{description:minimum?"زوّد الكمية في السلة وحاول تاني.":unavailable?"ارجع للسلة وحدّث اختياراتك.":"راجع البيانات وحاول مرة أخرى."});return;}
     const result=data as unknown as OrderResult;
     try {
       await notifyOrderPlaced({data:{orderId:result.order_id}});
