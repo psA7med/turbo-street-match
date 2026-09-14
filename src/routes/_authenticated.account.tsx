@@ -347,7 +347,25 @@ function Page() {
         )}
       </section></TabsContent>
         </Tabs>
+
+        <Dialog open={Boolean(cancelTarget)} onOpenChange={(open) => { if (!open) { setCancelTarget(null); setCancelReason(""); } }}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>إلغاء الطلب {cancelTarget ? `#${cancelTarget.order_number}` : ""}؟</DialogTitle>
+              <DialogDescription>اكتب سبب الإلغاء — هيوصلك إيميل بالتأكيد وهيوصل إشعار للمتجر.</DialogDescription>
+            </DialogHeader>
+            <label className="grid gap-2 text-sm font-bold" htmlFor="my-cancel-reason">سبب الإلغاء *</label>
+            <Textarea id="my-cancel-reason" rows={3} value={cancelReason} onChange={(event) => setCancelReason(event.target.value)} placeholder="مثال: غيّرت رأيي / اخترت مقاس غلط" />
+            <DialogFooter>
+              <Button variant="outline" size="sm" onClick={() => setCancelTarget(null)}>رجوع</Button>
+              <Button size="sm" disabled={cancelling || cancelReason.trim().length < 3} onClick={() => void submitCancel()}>
+                {cancelling ? <LoaderCircle className="animate-spin" /> : <XCircle />} تأكيد الإلغاء
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
+
   );
 }
