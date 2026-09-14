@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { getAdminOrder, saveAdminFulfillment, updateAdminOrder } from "@/lib/admin.functions";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AdminPageHeader, Panel, StatusPill, TableScroller, TableState, Td, Th, dateOnly, dateTime, fulfillmentLabels, money, paymentLabels, toneForFulfillment, toneForPayment } from "@/components/admin/ui";
 
 export const Route = createFileRoute("/_authenticated/admin/orders/$id")({ component: Page });
@@ -21,6 +21,8 @@ function Page() {
   const update = useServerFn(updateAdminOrder);
   const saveShipment = useServerFn(saveAdminFulfillment);
   const [busy, setBusy] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [reason, setReason] = useState("");
   const query = useQuery({ queryKey: ["admin-order", id], queryFn: () => load({ data: { id } }), retry: false });
   const order = query.data?.order;
   const profile = query.data?.profile;
@@ -145,13 +147,24 @@ function Page() {
                     </Select>
                   </label>
                   {order.fulfillment_status !== "cancelled" && (
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild><Button variant="outline" size="sm" disabled={busy}>إلغاء الطلب</Button></AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader><AlertDialogTitle>إلغاء الطلب؟</AlertDialogTitle><AlertDialogDescription>هيتم تحويل حالة الطلب إلى ملغي. الإجراء ده مؤثر على العميل.</AlertDialogDescription></AlertDialogHeader>
-                        <AlertDialogFooter><AlertDialogCancel>رجوع</AlertDialogCancel><AlertDialogAction onClick={() => void run(() => update({ data: { id, fulfillmentStatus: "cancelled" } }), "اتم إلغاء الطلب")}>تأكيد الإلغاء</AlertDialogAction></AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
+                      <DialogTrigger asChild><Button variant="outline" size="sm" disabled={busy}>إلغاء الطلب</Button></DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader><DialogTitle>إلغاء الطلب؟</DialogTitle><DialogDescription>اكتب سبب الإلغاء — هيتسجل مع الطلب للرجوع إليه.</DialogDescription></DialogHeader>
+                        <label className="grid gap-1.5 text-xs font-bold" htmlFor="cancel-reason">سبب الإلغاء *</label>
+                        <Textarea id="cancel-reason" rows={3} value={reason} onChange={(event) => setReason(event.target.value)} placeholder="مثال: العميل طلب الإلغاء / المقاس غير متاح" />
+                        <DialogFooter>
+                          <Button variant="outline" size="sm" onClick={() => setCancelOpen(false)}>رجوع</Button>
+                          <Button size="sm" disabled={busy || !reason.trim()} onClick={() => {
+                            const note = `${order.customer_note ? `${order.customer_note}\n` : ""}سبب الإلغاء: ${reason.trim()}`;
+                            void run(() => update({ data: { id, fulfillmentStatus: "cancelled", note } }), "اتم إلغاء الطلب").then(() => { setCancelOpen(false); setReason(""); });
+                          }}>تأكيد الإلغاء</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  )}
+                  {order.customer_note?.includes("سبب الإلغاء:") && (
+                    <p className="rounded-md border border-red-200 bg-red-50 p-3 text-xs text-red-700">{order.customer_note.split("سبب الإلغاء:").pop()?.trim()}</p>
                   )}
                 </div>
               </Panel>

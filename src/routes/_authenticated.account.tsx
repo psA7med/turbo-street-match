@@ -210,7 +210,7 @@ function Page() {
 
       <div className="turbo-container py-8 sm:py-12">
         {isAdmin && (
-          <Link to="/admin/wholesale-applications" className="mb-4 flex items-center justify-between gap-4 rounded-[10px] border border-primary bg-primary/5 p-5 transition-colors hover:bg-primary/10">
+          <Link to="/admin/wholesale" className="mb-4 flex items-center justify-between gap-4 rounded-[10px] border border-primary bg-primary/5 p-5 transition-colors hover:bg-primary/10">
             <div className="flex items-center gap-4">
               <span className="grid size-10 place-items-center rounded-lg bg-primary text-primary-foreground"><ShieldCheck className="size-5"/></span>
               <div><strong className="block">لوحة الإدارة — طلبات تجار الجملة</strong><p className="mt-1 text-sm text-muted-foreground">راجع الطلبات ووافق أو ارفض</p></div>

@@ -32,14 +32,16 @@ import { Route as AuthenticatedWholesaleApplyRouteImport } from './routes/_authe
 import { Route as ProductsSlugRouteImport } from './routes/products/$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminCategoriesRouteImport } from './routes/_authenticated/admin/categories'
+import { Route as AuthenticatedAdminContentRouteImport } from './routes/_authenticated/admin/content'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin/customers'
 import { Route as AuthenticatedAdminInventoryRouteImport } from './routes/_authenticated/admin/inventory'
 import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin/orders'
 import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin/products'
 import { Route as AuthenticatedAdminReviewsRouteImport } from './routes/_authenticated/admin/reviews'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin/settings'
+import { Route as AuthenticatedAdminShippingRouteImport } from './routes/_authenticated/admin/shipping'
+import { Route as AuthenticatedAdminSizeGuidesRouteImport } from './routes/_authenticated/admin/size-guides'
 import { Route as AuthenticatedAdminWholesaleRouteImport } from './routes/_authenticated/admin/wholesale'
-import { Route as AuthenticatedAdminWholesaleApplicationsRouteImport } from './routes/_authenticated.admin.wholesale-applications'
 import { Route as AuthenticatedAdminOrdersIdRouteImport } from './routes/_authenticated/admin/orders.$id'
 import { Route as AuthenticatedAdminProductsIdRouteImport } from './routes/_authenticated/admin/products.$id'
 import { Route as AuthenticatedAdminProductsNewRouteImport } from './routes/_authenticated/admin/products.new'
@@ -163,6 +165,12 @@ const AuthenticatedAdminCategoriesRoute =
     path: '/categories',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminContentRoute =
+  AuthenticatedAdminContentRouteImport.update({
+    id: '/content',
+    path: '/content',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminCustomersRoute =
   AuthenticatedAdminCustomersRouteImport.update({
     id: '/customers',
@@ -199,16 +207,22 @@ const AuthenticatedAdminSettingsRoute =
     path: '/settings',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminShippingRoute =
+  AuthenticatedAdminShippingRouteImport.update({
+    id: '/shipping',
+    path: '/shipping',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminSizeGuidesRoute =
+  AuthenticatedAdminSizeGuidesRouteImport.update({
+    id: '/size-guides',
+    path: '/size-guides',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminWholesaleRoute =
   AuthenticatedAdminWholesaleRouteImport.update({
     id: '/wholesale',
     path: '/wholesale',
-    getParentRoute: () => AuthenticatedAdminRouteRoute,
-  } as any)
-const AuthenticatedAdminWholesaleApplicationsRoute =
-  AuthenticatedAdminWholesaleApplicationsRouteImport.update({
-    id: '/wholesale-applications',
-    path: '/wholesale-applications',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
 const AuthenticatedAdminOrdersIdRoute =
@@ -268,14 +282,16 @@ export interface FileRoutesByFullPath {
   '/wholesale-apply': typeof AuthenticatedWholesaleApplyRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
+  '/admin/content': typeof AuthenticatedAdminContentRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin/inventory': typeof AuthenticatedAdminInventoryRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/products': typeof AuthenticatedAdminProductsRouteWithChildren
   '/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/shipping': typeof AuthenticatedAdminShippingRoute
+  '/admin/size-guides': typeof AuthenticatedAdminSizeGuidesRoute
   '/admin/wholesale': typeof AuthenticatedAdminWholesaleRoute
-  '/admin/wholesale-applications': typeof AuthenticatedAdminWholesaleApplicationsRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/admin/products/$id': typeof AuthenticatedAdminProductsIdRoute
@@ -305,14 +321,16 @@ export interface FileRoutesByTo {
   '/wholesale-apply': typeof AuthenticatedWholesaleApplyRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
+  '/admin/content': typeof AuthenticatedAdminContentRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin/inventory': typeof AuthenticatedAdminInventoryRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/products': typeof AuthenticatedAdminProductsRouteWithChildren
   '/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/shipping': typeof AuthenticatedAdminShippingRoute
+  '/admin/size-guides': typeof AuthenticatedAdminSizeGuidesRoute
   '/admin/wholesale': typeof AuthenticatedAdminWholesaleRoute
-  '/admin/wholesale-applications': typeof AuthenticatedAdminWholesaleApplicationsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/admin/products/$id': typeof AuthenticatedAdminProductsIdRoute
@@ -345,14 +363,16 @@ export interface FileRoutesById {
   '/_authenticated/wholesale-apply': typeof AuthenticatedWholesaleApplyRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/_authenticated/admin/categories': typeof AuthenticatedAdminCategoriesRoute
+  '/_authenticated/admin/content': typeof AuthenticatedAdminContentRoute
   '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/_authenticated/admin/inventory': typeof AuthenticatedAdminInventoryRoute
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/_authenticated/admin/products': typeof AuthenticatedAdminProductsRouteWithChildren
   '/_authenticated/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/_authenticated/admin/shipping': typeof AuthenticatedAdminShippingRoute
+  '/_authenticated/admin/size-guides': typeof AuthenticatedAdminSizeGuidesRoute
   '/_authenticated/admin/wholesale': typeof AuthenticatedAdminWholesaleRoute
-  '/_authenticated/admin/wholesale-applications': typeof AuthenticatedAdminWholesaleApplicationsRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/_authenticated/admin/products/$id': typeof AuthenticatedAdminProductsIdRoute
@@ -385,14 +405,16 @@ export interface FileRouteTypes {
     | '/wholesale-apply'
     | '/products/$slug'
     | '/admin/categories'
+    | '/admin/content'
     | '/admin/customers'
     | '/admin/inventory'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/reviews'
     | '/admin/settings'
+    | '/admin/shipping'
+    | '/admin/size-guides'
     | '/admin/wholesale'
-    | '/admin/wholesale-applications'
     | '/admin/'
     | '/admin/orders/$id'
     | '/admin/products/$id'
@@ -422,14 +444,16 @@ export interface FileRouteTypes {
     | '/wholesale-apply'
     | '/products/$slug'
     | '/admin/categories'
+    | '/admin/content'
     | '/admin/customers'
     | '/admin/inventory'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/reviews'
     | '/admin/settings'
+    | '/admin/shipping'
+    | '/admin/size-guides'
     | '/admin/wholesale'
-    | '/admin/wholesale-applications'
     | '/admin'
     | '/admin/orders/$id'
     | '/admin/products/$id'
@@ -461,14 +485,16 @@ export interface FileRouteTypes {
     | '/_authenticated/wholesale-apply'
     | '/products/$slug'
     | '/_authenticated/admin/categories'
+    | '/_authenticated/admin/content'
     | '/_authenticated/admin/customers'
     | '/_authenticated/admin/inventory'
     | '/_authenticated/admin/orders'
     | '/_authenticated/admin/products'
     | '/_authenticated/admin/reviews'
     | '/_authenticated/admin/settings'
+    | '/_authenticated/admin/shipping'
+    | '/_authenticated/admin/size-guides'
     | '/_authenticated/admin/wholesale'
-    | '/_authenticated/admin/wholesale-applications'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/orders/$id'
     | '/_authenticated/admin/products/$id'
@@ -665,6 +691,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCategoriesRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/content': {
+      id: '/_authenticated/admin/content'
+      path: '/content'
+      fullPath: '/admin/content'
+      preLoaderRoute: typeof AuthenticatedAdminContentRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/customers': {
       id: '/_authenticated/admin/customers'
       path: '/customers'
@@ -707,18 +740,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/shipping': {
+      id: '/_authenticated/admin/shipping'
+      path: '/shipping'
+      fullPath: '/admin/shipping'
+      preLoaderRoute: typeof AuthenticatedAdminShippingRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/size-guides': {
+      id: '/_authenticated/admin/size-guides'
+      path: '/size-guides'
+      fullPath: '/admin/size-guides'
+      preLoaderRoute: typeof AuthenticatedAdminSizeGuidesRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/wholesale': {
       id: '/_authenticated/admin/wholesale'
       path: '/wholesale'
       fullPath: '/admin/wholesale'
       preLoaderRoute: typeof AuthenticatedAdminWholesaleRouteImport
-      parentRoute: typeof AuthenticatedAdminRouteRoute
-    }
-    '/_authenticated/admin/wholesale-applications': {
-      id: '/_authenticated/admin/wholesale-applications'
-      path: '/wholesale-applications'
-      fullPath: '/admin/wholesale-applications'
-      preLoaderRoute: typeof AuthenticatedAdminWholesaleApplicationsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/admin/orders/$id': {
@@ -798,20 +838,23 @@ const AuthenticatedAdminProductsRouteWithChildren =
 
 interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminCategoriesRoute: typeof AuthenticatedAdminCategoriesRoute
+  AuthenticatedAdminContentRoute: typeof AuthenticatedAdminContentRoute
   AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRoute
   AuthenticatedAdminInventoryRoute: typeof AuthenticatedAdminInventoryRoute
   AuthenticatedAdminOrdersRoute: typeof AuthenticatedAdminOrdersRouteWithChildren
   AuthenticatedAdminProductsRoute: typeof AuthenticatedAdminProductsRouteWithChildren
   AuthenticatedAdminReviewsRoute: typeof AuthenticatedAdminReviewsRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
+  AuthenticatedAdminShippingRoute: typeof AuthenticatedAdminShippingRoute
+  AuthenticatedAdminSizeGuidesRoute: typeof AuthenticatedAdminSizeGuidesRoute
   AuthenticatedAdminWholesaleRoute: typeof AuthenticatedAdminWholesaleRoute
-  AuthenticatedAdminWholesaleApplicationsRoute: typeof AuthenticatedAdminWholesaleApplicationsRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
     AuthenticatedAdminCategoriesRoute: AuthenticatedAdminCategoriesRoute,
+    AuthenticatedAdminContentRoute: AuthenticatedAdminContentRoute,
     AuthenticatedAdminCustomersRoute: AuthenticatedAdminCustomersRoute,
     AuthenticatedAdminInventoryRoute: AuthenticatedAdminInventoryRoute,
     AuthenticatedAdminOrdersRoute: AuthenticatedAdminOrdersRouteWithChildren,
@@ -819,9 +862,9 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
       AuthenticatedAdminProductsRouteWithChildren,
     AuthenticatedAdminReviewsRoute: AuthenticatedAdminReviewsRoute,
     AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
+    AuthenticatedAdminShippingRoute: AuthenticatedAdminShippingRoute,
+    AuthenticatedAdminSizeGuidesRoute: AuthenticatedAdminSizeGuidesRoute,
     AuthenticatedAdminWholesaleRoute: AuthenticatedAdminWholesaleRoute,
-    AuthenticatedAdminWholesaleApplicationsRoute:
-      AuthenticatedAdminWholesaleApplicationsRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   }
 
