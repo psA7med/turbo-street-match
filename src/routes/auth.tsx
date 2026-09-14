@@ -322,6 +322,7 @@ function AuthPage() {
             <Button type="submit" size="lg" disabled={busy}>
               {loading ? <LoaderCircle className="animate-spin" /> : mode === "signin" ? "تسجيل الدخول" : "إنشاء الحساب"}
             </Button>
+            {mode === "signin" && <Button type="button" variant="link" className="justify-self-center" disabled={busy} onClick={() => { holdRedirect.current = true; setReset({ stage: "request", email: "" }); }}>نسيت كلمة المرور؟</Button>}
           </form>
 
           <p className="mt-6 flex items-center justify-center gap-2 text-center text-xs text-muted-foreground">
