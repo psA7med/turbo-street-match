@@ -9,6 +9,7 @@ import { money } from "@/components/storefront/catalog";
 import { clearCart, useCart } from "@/lib/cart";
 import { notifyOrderPlaced } from "@/lib/order-notification.functions";
 import { startTurboOverlay } from "@/components/storefront/page-transition";
+import { useWholesale } from "@/hooks/use-wholesale";
 import { supabase } from "@/integrations/supabase/client";
 
 type OrderResult={order_id:string;order_number:string;subtotal:number;shipping:number;total:number};
