@@ -26,6 +26,8 @@ export interface TemplateEntry {
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'order-notification': orderNotificationTemplate,
   'order-confirmation': orderConfirmationTemplate,
+  'order-status': orderStatusTemplate,
   'wholesale-application': wholesaleApplicationTemplate,
   'wholesale-application-confirmation': wholesaleApplicationConfirmationTemplate,
+  'wholesale-decision': wholesaleDecisionTemplate,
 }
