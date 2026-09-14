@@ -1,6 +1,6 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { BadgeCheck, CheckCircle2, LoaderCircle, Lock, MailCheck, Package, Phone, Store, UserRound } from "lucide-react";
+import { BadgeCheck, CheckCircle2, KeyRound, LoaderCircle, Lock, MailCheck, Package, Phone, Store, UserRound } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/turbo-logo.svg.asset.json";
@@ -46,19 +46,83 @@ function AuthPage() {
   const [confirmationCode, setConfirmationCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [reset, setReset] = useState<null | { stage: "request" | "code" | "choice" | "password"; email: string }>(null);
+  const [resetCode, setResetCode] = useState("");
+  const holdRedirect = useRef(false);
   const navigate = useNavigate();
 
   // بعد الرجوع من جوجل: لو الجلسة اتعملت انقل مباشرة للحساب
   useEffect(() => {
     let active = true;
     supabase.auth.getUser().then(({ data }) => {
-      if (active && data.user) navigate({ to: "/account", replace: true });
+      if (active && !holdRedirect.current && data.user) navigate({ to: "/account", replace: true });
     });
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (active && session?.user) navigate({ to: "/account", replace: true });
+      if (active && !holdRedirect.current && session?.user) navigate({ to: "/account", replace: true });
     });
     return () => { active = false; listener.subscription.unsubscribe(); };
   }, [navigate]);
+
+  const requestReset = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const email = String(new FormData(event.currentTarget).get("resetEmail") ?? "").trim().toLowerCase();
+    setLoading(true);
+    holdRedirect.current = true;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + "/auth" });
+    setLoading(false);
+    if (error) { toast.error("تعذر إرسال كود الاستعادة", { description: error.message }); return; }
+    setReset({ stage: "code", email });
+    setResetCode("");
+    toast.success("بعتنا لك كود استعادة على بريدك");
+  };
+
+  const verifyResetCode = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!reset) return;
+    setLoading(true);
+    const { error } = await supabase.auth.verifyOtp({ email: reset.email, token: resetCode.replace(/\D/g, ""), type: "recovery" });
+    setLoading(false);
+    if (error) { toast.error("الكود غير صحيح أو انتهت صلاحيته", { description: "اطلب كود جديد وجرب تاني." }); return; }
+    setReset({ stage: "choice", email: reset.email });
+    toast.success("تم التحقق من بريدك");
+  };
+
+  const resendResetCode = async () => {
+    if (!reset) return;
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(reset.email, { redirectTo: window.location.origin + "/auth" });
+    setLoading(false);
+    error
+      ? toast.error("تعذر إعادة إرسال الكود", { description: error.message })
+      : toast.success("بعتنا لك كود جديد", { description: "استخدم آخر كود فقط." });
+  };
+
+  const savePassword = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const fd = new FormData(event.currentTarget);
+    const password = String(fd.get("newPassword") ?? "");
+    if (password !== String(fd.get("newPasswordConfirm") ?? "")) { toast.error("كلمتا المرور غير متطابقتين"); return; }
+    setLoading(true);
+    const { error } = await supabase.auth.updateUser({ password });
+    setLoading(false);
+    if (error) { toast.error("تعذر تغيير كلمة المرور", { description: error.message }); return; }
+    toast.success("تم تغيير كلمة المرور");
+    holdRedirect.current = false;
+    setReset(null);
+    navigate({ to: "/account", replace: true });
+  };
+
+  const enterAccount = () => {
+    holdRedirect.current = false;
+    setReset(null);
+    navigate({ to: "/account", replace: true });
+  };
+
+  const closeReset = () => {
+    holdRedirect.current = false;
+    setReset(null);
+    setResetCode("");
+  };
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -172,7 +236,48 @@ function AuthPage() {
 
         <div className="p-6 sm:p-8">
           <img src={logo.url} alt="TURBO" className="mx-auto h-12 w-40 object-contain md:mx-0 md:justify-self-start" />
-          {confirmationEmail ? <div className="mt-8">
+          {reset ? <div className="mt-8">
+            <span className="grid size-14 place-items-center rounded-lg bg-primary/10 text-primary"><KeyRound className="size-7" /></span>
+            {reset.stage === "request" && <>
+              <h1 className="mt-5 text-3xl font-extrabold">نسيت كلمة المرور؟</h1>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">اكتب بريدك وهنبعت لك كود استعادة.</p>
+              <form onSubmit={requestReset} className="mt-6 grid gap-4">
+                <label className="grid gap-2 text-sm font-bold">البريد الإلكتروني
+                  <Input name="resetEmail" required type="email" dir="ltr" autoComplete="email" defaultValue={reset.email} placeholder="email@example.com" />
+                </label>
+                <Button type="submit" size="lg" disabled={loading}>{loading ? <LoaderCircle className="animate-spin" /> : <MailCheck />} إرسال الكود</Button>
+                <Button type="button" variant="link" onClick={closeReset} disabled={loading}>رجوع لتسجيل الدخول</Button>
+              </form>
+            </>}
+            {reset.stage === "code" && <>
+              <h1 className="mt-5 text-3xl font-extrabold">اكتب كود الاستعادة</h1>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">بعتنا الكود كاملًا إلى <span dir="ltr" className="font-semibold text-foreground">{reset.email}</span></p>
+              <form onSubmit={verifyResetCode} className="mt-6 grid gap-4">
+                <Input aria-label="كود الاستعادة" required inputMode="numeric" autoComplete="one-time-code" minLength={6} maxLength={10} dir="ltr" className="h-14 text-center text-2xl font-bold tracking-[0.35em]" value={resetCode} onChange={(event) => setResetCode(event.target.value.replace(/\D/g, "").slice(0, 10))} />
+                <Button type="submit" size="lg" disabled={loading || resetCode.length < 6}>{loading ? <LoaderCircle className="animate-spin" /> : <CheckCircle2 />} تأكيد الكود</Button>
+                <Button type="button" variant="ghost" onClick={resendResetCode} disabled={loading}>إعادة إرسال الكود</Button>
+                <Button type="button" variant="link" onClick={closeReset} disabled={loading}>إلغاء</Button>
+              </form>
+            </>}
+            {reset.stage === "choice" && <>
+              <h1 className="mt-5 text-3xl font-extrabold">تم التحقق</h1>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">تحب تعمل إيه دلوقتي؟</p>
+              <div className="mt-6 grid gap-3">
+                <Button type="button" size="lg" onClick={enterAccount}><UserRound /> الدخول للحساب</Button>
+                <Button type="button" size="lg" variant="outline" onClick={() => setReset({ stage: "password", email: reset.email })}><KeyRound /> تغيير كلمة المرور</Button>
+              </div>
+            </>}
+            {reset.stage === "password" && <>
+              <h1 className="mt-5 text-3xl font-extrabold">كلمة مرور جديدة</h1>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">اختار كلمة مرور 8 حروف على الأقل.</p>
+              <form onSubmit={savePassword} className="mt-6 grid gap-4">
+                <label className="grid gap-2 text-sm font-bold">كلمة المرور الجديدة<Input name="newPassword" required minLength={8} type="password" dir="ltr" autoComplete="new-password" /></label>
+                <label className="grid gap-2 text-sm font-bold">تأكيد كلمة المرور<Input name="newPasswordConfirm" required minLength={8} type="password" dir="ltr" autoComplete="new-password" /></label>
+                <Button type="submit" size="lg" disabled={loading}>{loading ? <LoaderCircle className="animate-spin" /> : <CheckCircle2 />} حفظ كلمة المرور</Button>
+                <Button type="button" variant="link" onClick={enterAccount} disabled={loading}>تخطي والدخول للحساب</Button>
+              </form>
+            </>}
+          </div> : confirmationEmail ? <div className="mt-8">
             <span className="grid size-14 place-items-center rounded-lg bg-primary/10 text-primary"><MailCheck className="size-7" /></span>
             <h1 className="mt-5 text-3xl font-extrabold">أكد بريدك</h1>
             <p className="mt-2 text-sm leading-7 text-muted-foreground">اكتب كود التأكيد كاملًا زي ما وصلك في الرسالة إلى <span dir="ltr" className="font-semibold text-foreground">{confirmationEmail}</span></p>
@@ -217,6 +322,7 @@ function AuthPage() {
             <Button type="submit" size="lg" disabled={busy}>
               {loading ? <LoaderCircle className="animate-spin" /> : mode === "signin" ? "تسجيل الدخول" : "إنشاء الحساب"}
             </Button>
+            {mode === "signin" && <Button type="button" variant="link" className="justify-self-center" disabled={busy} onClick={() => { holdRedirect.current = true; setReset({ stage: "request", email: "" }); }}>نسيت كلمة المرور؟</Button>}
           </form>
 
           <p className="mt-6 flex items-center justify-center gap-2 text-center text-xs text-muted-foreground">
