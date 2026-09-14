@@ -236,7 +236,48 @@ function AuthPage() {
 
         <div className="p-6 sm:p-8">
           <img src={logo.url} alt="TURBO" className="mx-auto h-12 w-40 object-contain md:mx-0 md:justify-self-start" />
-          {confirmationEmail ? <div className="mt-8">
+          {reset ? <div className="mt-8">
+            <span className="grid size-14 place-items-center rounded-lg bg-primary/10 text-primary"><KeyRound className="size-7" /></span>
+            {reset.stage === "request" && <>
+              <h1 className="mt-5 text-3xl font-extrabold">نسيت كلمة المرور؟</h1>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">اكتب بريدك وهنبعت لك كود استعادة.</p>
+              <form onSubmit={requestReset} className="mt-6 grid gap-4">
+                <label className="grid gap-2 text-sm font-bold">البريد الإلكتروني
+                  <Input name="resetEmail" required type="email" dir="ltr" autoComplete="email" defaultValue={reset.email} placeholder="email@example.com" />
+                </label>
+                <Button type="submit" size="lg" disabled={loading}>{loading ? <LoaderCircle className="animate-spin" /> : <MailCheck />} إرسال الكود</Button>
+                <Button type="button" variant="link" onClick={closeReset} disabled={loading}>رجوع لتسجيل الدخول</Button>
+              </form>
+            </>}
+            {reset.stage === "code" && <>
+              <h1 className="mt-5 text-3xl font-extrabold">اكتب كود الاستعادة</h1>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">بعتنا الكود كاملًا إلى <span dir="ltr" className="font-semibold text-foreground">{reset.email}</span></p>
+              <form onSubmit={verifyResetCode} className="mt-6 grid gap-4">
+                <Input aria-label="كود الاستعادة" required inputMode="numeric" autoComplete="one-time-code" minLength={6} maxLength={10} dir="ltr" className="h-14 text-center text-2xl font-bold tracking-[0.35em]" value={resetCode} onChange={(event) => setResetCode(event.target.value.replace(/\D/g, "").slice(0, 10))} />
+                <Button type="submit" size="lg" disabled={loading || resetCode.length < 6}>{loading ? <LoaderCircle className="animate-spin" /> : <CheckCircle2 />} تأكيد الكود</Button>
+                <Button type="button" variant="ghost" onClick={resendResetCode} disabled={loading}>إعادة إرسال الكود</Button>
+                <Button type="button" variant="link" onClick={closeReset} disabled={loading}>إلغاء</Button>
+              </form>
+            </>}
+            {reset.stage === "choice" && <>
+              <h1 className="mt-5 text-3xl font-extrabold">تم التحقق</h1>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">تحب تعمل إيه دلوقتي؟</p>
+              <div className="mt-6 grid gap-3">
+                <Button type="button" size="lg" onClick={enterAccount}><UserRound /> الدخول للحساب</Button>
+                <Button type="button" size="lg" variant="outline" onClick={() => setReset({ stage: "password", email: reset.email })}><KeyRound /> تغيير كلمة المرور</Button>
+              </div>
+            </>}
+            {reset.stage === "password" && <>
+              <h1 className="mt-5 text-3xl font-extrabold">كلمة مرور جديدة</h1>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">اختار كلمة مرور 8 حروف على الأقل.</p>
+              <form onSubmit={savePassword} className="mt-6 grid gap-4">
+                <label className="grid gap-2 text-sm font-bold">كلمة المرور الجديدة<Input name="newPassword" required minLength={8} type="password" dir="ltr" autoComplete="new-password" /></label>
+                <label className="grid gap-2 text-sm font-bold">تأكيد كلمة المرور<Input name="newPasswordConfirm" required minLength={8} type="password" dir="ltr" autoComplete="new-password" /></label>
+                <Button type="submit" size="lg" disabled={loading}>{loading ? <LoaderCircle className="animate-spin" /> : <CheckCircle2 />} حفظ كلمة المرور</Button>
+                <Button type="button" variant="link" onClick={enterAccount} disabled={loading}>تخطي والدخول للحساب</Button>
+              </form>
+            </>}
+          </div> : confirmationEmail ? <div className="mt-8">
             <span className="grid size-14 place-items-center rounded-lg bg-primary/10 text-primary"><MailCheck className="size-7" /></span>
             <h1 className="mt-5 text-3xl font-extrabold">أكد بريدك</h1>
             <p className="mt-2 text-sm leading-7 text-muted-foreground">اكتب كود التأكيد كاملًا زي ما وصلك في الرسالة إلى <span dir="ltr" className="font-semibold text-foreground">{confirmationEmail}</span></p>
