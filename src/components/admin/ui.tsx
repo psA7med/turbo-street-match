@@ -94,8 +94,8 @@ export function Th({ children, className, dir }: { children: ReactNode; classNam
   return <th scope="col" dir={dir} className={cn("border-b border-border px-4 py-2.5 text-start text-xs font-bold text-muted-foreground", className)}>{children}</th>;
 }
 
-export function Td({ children, className, dir }: { children: ReactNode; className?: string; dir?: string }) {
-  return <td dir={dir} className={cn("border-b border-border px-4 py-3 align-middle", className)}>{children}</td>;
+export function Td({ children, className, dir, colSpan }: { children: ReactNode; className?: string; dir?: string; colSpan?: number }) {
+  return <td dir={dir} colSpan={colSpan} className={cn("border-b border-border px-4 py-3 align-middle", className)}>{children}</td>;
 }
 
 export function Pager({ page, size, total, onPage }: { page: number; size: number; total: number; onPage: (page: number) => void }) {
