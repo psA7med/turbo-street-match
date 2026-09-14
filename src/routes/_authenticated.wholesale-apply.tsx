@@ -55,7 +55,11 @@ function Page() {
     }).select("id").single();
     if (error || !data) {
       setLoading(false);
-      toast.error("تعذر إرسال الطلب", { description: error?.message });
+      const duplicate = error?.code === "23505";
+      toast.error(duplicate ? "عندك طلب جملة مسجّل بالفعل" : "تعذر إرسال الطلب", {
+        description: duplicate ? "تابع حالة طلبك من حسابك." : "راجع البيانات وحاول تاني.",
+      });
+      if (duplicate) await refetch();
       return;
     }
     try {
