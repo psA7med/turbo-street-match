@@ -207,6 +207,15 @@
   opacity: 0.75;
 }
 
+.admin-nav-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.admin-nav-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 @media (min-width: 48rem) {
   .turbo-container { width: min(100% - 3rem, 80rem); }
 }

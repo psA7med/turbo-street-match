@@ -88,6 +88,11 @@ function AuthPage() {
       return;
     }
     if (mode === "signup" && !result.data.session) {
+      if (result.data.user?.identities?.length === 0) {
+        setMode("signin");
+        toast.error("البريد ده عليه حساب بالفعل", { description: "سجّل دخول بكلمة المرور بدل إنشاء حساب جديد." });
+        return;
+      }
       setConfirmationEmail(email);
       toast.success("بعتنا لك كود تأكيد على بريدك");
       return;
@@ -119,7 +124,9 @@ function AuthPage() {
     setLoading(true);
     const { error } = await supabase.auth.resend({ type: "signup", email: confirmationEmail.trim().toLowerCase(), options: { emailRedirectTo: window.location.origin + "/auth" } });
     setLoading(false);
-    error ? toast.error("تعذر إعادة إرسال الكود") : toast.success("بعتنا لك كود جديد");
+    error
+      ? toast.error("تعذر إعادة إرسال الكود", { description: error.message })
+      : toast.success("بعتنا لك كود جديد", { description: "استخدم آخر كود فقط؛ الأكواد الأقدم بتتلغي." });
   };
 
   const google = async () => {
@@ -173,6 +180,7 @@ function AuthPage() {
               <Input aria-label="كود التأكيد" required inputMode="numeric" autoComplete="one-time-code" maxLength={6} dir="ltr" className="h-14 text-center text-2xl font-bold tracking-[0.45em]" value={confirmationCode} onChange={(event) => setConfirmationCode(event.target.value.replace(/\D/g, "").slice(0, 6))} />
               <Button type="submit" size="lg" disabled={loading || confirmationCode.length !== 6}>{loading ? <LoaderCircle className="animate-spin" /> : <CheckCircle2 />} تأكيد الحساب</Button>
               <Button type="button" variant="ghost" onClick={resendCode} disabled={loading}>إعادة إرسال الكود</Button>
+              <Button type="button" variant="link" onClick={() => { setConfirmationEmail(""); setConfirmationCode(""); }} disabled={loading}>تغيير البريد</Button>
             </form>
           </div> : <>
           <h1 className="mt-6 text-center text-3xl font-bold md:text-start">{mode === "signin" ? "ادخل حسابك" : "اعمل حساب جديد"}</h1>
