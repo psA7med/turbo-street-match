@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import mark from "@/assets/turbo-mark.svg.asset.json";
-import navLogo from "@/assets/turbo-logo.svg.asset.json";
 
 // انتقال TURBO مخصص للعمليات اللي بتاخد وقت (تأكيد الطلب، إلغاء الطلب…)
 // ومش بيشتغل على التنقل العادي بين الصفحات.
@@ -86,70 +85,3 @@ export function PageTransition() {
   );
 }
 
-// ---------- انتقال سريع للقائمة العلوية: الشعار يدخل من الشمال ويخرج لليمين ----------
-
-type NavState = "idle" | "enter" | "exit";
-const navListeners = new Set<(state: NavState) => void>();
-let navCurrent: NavState = "idle";
-let navTimers: number[] = [];
-let navRunning = false;
-
-function setNav(state: NavState) {
-  navCurrent = state;
-  navListeners.forEach((listener) => listener(state));
-}
-
-/** يشغّل انتقال TURBO السريع عند الضغط على روابط القائمة العلوية. */
-export function startNavTransition(navigate: () => void) {
-  if (navRunning) return;
-  navRunning = true;
-  navTimers.forEach((id) => window.clearTimeout(id));
-  navTimers = [];
-
-  setNav("enter");
-
-  // ننقل المستخدم فورًا عشان الأنيميشن يكمل فوق الصفحة الجديدة
-  const go = window.setTimeout(() => {
-    navigate();
-  }, 80);
-
-  const exit = window.setTimeout(() => {
-    setNav("exit");
-  }, 360);
-
-  // نرجع للحالة الطبيعية بعد ما الانتقال يخلص
-  const idle = window.setTimeout(() => {
-    setNav("idle");
-    navRunning = false;
-    navTimers = [];
-  }, 700);
-
-  navTimers = [go, exit, idle];
-}
-
-
-export function NavTransition() {
-  const [state, setState] = useState<NavState>(navCurrent);
-
-  useEffect(() => {
-    navListeners.add(setState);
-    setState(navCurrent);
-    return () => {
-      navListeners.delete(setState);
-    };
-  }, []);
-
-  return (
-    <div
-      className="turbo-nav-transition"
-      data-state={state}
-      aria-hidden={state === "idle"}
-      role="status"
-      aria-live="polite"
-      aria-label="جاري التنقل"
-      data-testid="turbo-nav-transition"
-    >
-      <img className="turbo-nav-transition-logo" src={navLogo.url} alt="TURBO" />
-    </div>
-  );
-}
