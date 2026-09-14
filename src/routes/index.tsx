@@ -42,7 +42,7 @@ function Index() {
             <img src={darkLogo.url} alt="TURBO" className="turbo-hero-logo h-auto w-[min(76vw,31rem)] object-contain" />
           </div>
           <h1 className="sr-only">{hero?.title_ar??"TURBO ملابس رياضية مصرية للملعب والشارع"}</h1>
-          <p className="mt-8 max-w-xl text-sm font-medium leading-7 text-primary-foreground/75 sm:text-base">{hero?.body_ar??"الملعب في كل شارع."}</p>
+           <p className="mt-8 max-w-xl text-sm font-medium leading-7 text-primary-foreground/75 sm:text-base">{hero?.body_ar??"محمد  البشير الجن"}</p>
           <div className="mt-7 flex flex-wrap justify-center gap-3"><Button asChild size="lg"><Link to="/shop">تسوّق الآن <ArrowLeft/></Link></Button><Button asChild size="lg" variant="dark-secondary"><Link to="/new">شوف الجديد</Link></Button></div>
         </div>
       </section>
