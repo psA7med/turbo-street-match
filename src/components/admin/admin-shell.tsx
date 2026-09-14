@@ -174,7 +174,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
             {collapsed ? <img src={mark.url} alt="TURBO" className="size-8" /> : <img src={darkLogo.url} alt="TURBO" className="h-8 w-28 object-contain" />}
           </Link>
         </div>
-        <div className="mt-2 flex-1 overflow-y-auto"><NavList collapsed={collapsed} /></div>
+        <div className="admin-nav-scroll mt-2 flex-1 overflow-y-auto"><NavList collapsed={collapsed} /></div>
         <div className="grid gap-1 border-t border-primary-foreground/10 pt-3">
           {!collapsed && <p dir="ltr" className="truncate px-3 text-xs text-primary-foreground/50">{email}</p>}
           <Link to="/account" className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold text-primary-foreground/70 hover:bg-primary-foreground/10", collapsed && "justify-center px-0")} title="ملف الإدارة">
