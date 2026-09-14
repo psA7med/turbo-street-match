@@ -315,16 +315,26 @@ function Page() {
                     <p className="mt-1 text-sm text-muted-foreground">{new Date(o.created_at).toLocaleDateString("ar-EG", { day: "numeric", month: "long", year: "numeric" })}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-4">
                   <div className="text-end">
                     <strong>{money(o.grand_total)}</strong>
                     <p className="mt-1 text-sm font-semibold text-primary">{statusLabel[o.fulfillment_status] ?? o.fulfillment_status}</p>
                   </div>
+                  {CANCELLABLE_STATUSES.includes(o.fulfillment_status) ? (
+                    <Button size="sm" variant="outline" onClick={() => { setCancelTarget({ id: o.id, order_number: o.order_number }); setCancelReason(""); }}>
+                      <XCircle /> إلغاء الطلب
+                    </Button>
+                  ) : o.fulfillment_status === "cancelled" ? null : (
+                    <Button size="sm" variant="outline" disabled title="الطلب اتشحن — الإلغاء مش متاح">
+                      <XCircle /> إلغاء الطلب
+                    </Button>
+                  )}
                   <ChevronLeft className="size-4 text-muted-foreground" aria-hidden="true" />
                 </div>
               </div>
             ))}
           </div>
+
         ) : (
           <div className="mt-5 grid place-items-center gap-4 rounded-[10px] border border-dashed p-10 text-center">
             <span className="grid size-14 place-items-center rounded-full bg-primary/10 text-primary"><Package className="size-6" /></span>
