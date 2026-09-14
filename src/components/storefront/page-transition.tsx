@@ -111,18 +111,18 @@ export function startNavTransition(navigate: () => void) {
   // ننقل المستخدم فورًا عشان الأنيميشن يكمل فوق الصفحة الجديدة
   const go = window.setTimeout(() => {
     navigate();
-  }, 60);
+  }, 80);
 
   const exit = window.setTimeout(() => {
     setNav("exit");
-  }, 300);
+  }, 360);
 
   // نرجع للحالة الطبيعية بعد ما الانتقال يخلص
   const idle = window.setTimeout(() => {
     setNav("idle");
     navRunning = false;
     navTimers = [];
-  }, 560);
+  }, 700);
 
   navTimers = [go, exit, idle];
 }
@@ -139,12 +139,11 @@ export function NavTransition() {
     };
   }, []);
 
-  if (state === "idle") return null;
-
   return (
     <div
       className="turbo-nav-transition"
       data-state={state}
+      aria-hidden={state === "idle"}
       role="status"
       aria-live="polite"
       aria-label="جاري التنقل"
