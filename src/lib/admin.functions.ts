@@ -234,6 +234,9 @@ export const updateAdminOrder = createServerFn({ method: "POST" })
         if (error) throw error;
       }
     }
+    if (data.fulfillmentStatus || data.paymentStatus) {
+      await notifyOrderUpdate(db, data.id, clean(data.note));
+    }
     return { ok: true };
   });
 
@@ -258,6 +261,11 @@ export const saveAdminFulfillment = createServerFn({ method: "POST" })
       ? await db.from("fulfillments").update(patch).eq("id", existing.id)
       : await db.from("fulfillments").insert({ order_id: data.orderId, ...patch });
     if (response.error) throw response.error;
+    if (data.status) {
+      const { error } = await db.from("orders").update({ fulfillment_status: data.status }).eq("id", data.orderId);
+      if (error) throw error;
+    }
+    await notifyOrderUpdate(db, data.orderId, null);
     return { ok: true };
   });
 
