@@ -37,8 +37,6 @@ function Index() {
       <section className="relative min-h-[32rem] overflow-hidden bg-brand-black text-primary-foreground sm:min-h-[36rem] lg:min-h-[40rem]">
         <HalftoneFlow className="absolute inset-0 size-full" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,color-mix(in_oklab,var(--surface-dark)_18%,transparent)_42%,color-mix(in_oklab,var(--surface-dark)_72%,transparent)_100%)]"/>
-        <div className="absolute inset-x-0 top-1/2 border-t border-primary-foreground/10" aria-hidden="true"/>
-        <div className="absolute inset-y-0 left-1/2 border-l border-primary-foreground/10" aria-hidden="true"/>
         <div className="turbo-container relative flex min-h-[32rem] flex-col items-center justify-center py-14 text-center sm:min-h-[36rem] lg:min-h-[40rem]">
           <div className="turbo-hero-logo-wrap">
             <img src={darkLogo.url} alt="TURBO" className="turbo-hero-logo h-auto w-[min(76vw,31rem)] object-contain" />
