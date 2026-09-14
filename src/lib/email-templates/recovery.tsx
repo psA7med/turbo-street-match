@@ -5,7 +5,7 @@ import { EmailLayout, emailStyles } from './email-layout'
 interface RecoveryEmailProps {
   siteName: string
   confirmationUrl: string
-  token?: string
+  token?: string | undefined
 }
 
 export const RecoveryEmail = ({
