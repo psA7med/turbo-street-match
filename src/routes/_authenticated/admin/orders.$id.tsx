@@ -20,7 +20,10 @@ function Page() {
   const load = useServerFn(getAdminOrder);
   const update = useServerFn(updateAdminOrder);
   const saveShipment = useServerFn(saveAdminFulfillment);
+  const sendUpdate = useServerFn(sendAdminOrderUpdate);
   const [busy, setBusy] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [message, setMessage] = useState("");
   const [cancelOpen, setCancelOpen] = useState(false);
   const [reason, setReason] = useState("");
   const query = useQuery({ queryKey: ["admin-order", id], queryFn: () => load({ data: { id } }), retry: false });
