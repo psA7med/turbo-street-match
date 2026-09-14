@@ -42,6 +42,40 @@ function useAccountState() {
   return state;
 }
 
+function NavLink({ label, to }: { label: string; to: string }) {
+  const navigate = useNavigate();
+  return (
+    <Link
+      to={to}
+      className="transition-colors duration-150 hover:text-primary"
+      activeProps={{ className: "text-primary" }}
+      onClick={(e) => {
+        e.preventDefault();
+        startNavTransition(() => navigate({ to }));
+      }}
+    >
+      {label}
+    </Link>
+  );
+}
+
+function SheetNavLink({ label, to, onClick }: { label: string; to: string; onClick?: () => void }) {
+  const navigate = useNavigate();
+  return (
+    <Link
+      to={to}
+      className="border-b border-border py-4 text-lg font-semibold"
+      onClick={(e) => {
+        e.preventDefault();
+        onClick?.();
+        startNavTransition(() => navigate({ to }));
+      }}
+    >
+      {label}
+    </Link>
+  );
+}
+
 export function SiteHeader() {
   const { count: wishlistCount } = useWishlist();
   const { count } = useCart();
