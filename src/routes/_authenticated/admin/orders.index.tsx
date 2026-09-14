@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { listAdminOrders } from "@/lib/admin.functions";
 import { AdminPageHeader, Pager, Panel, StatusPill, TableScroller, TableState, Td, Th, dateTime, fulfillmentLabels, money, paymentLabels, toneForFulfillment, toneForPayment } from "@/components/admin/ui";
 
-export const Route = createFileRoute("/_authenticated/admin/orders")({ component: Page });
+export const Route = createFileRoute("/_authenticated/admin/orders/")({ component: Page });
 
 const ANY = "all";
 
