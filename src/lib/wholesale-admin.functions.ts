@@ -60,17 +60,25 @@ export const updateWholesaleApplicationStatus = createServerFn({ method: "POST" 
           supabaseAdmin.from("wholesale_applications").select("business_name,contact_name").eq("id", data.applicationId).maybeSingle(),
         ]);
         const to = authUser?.user?.email;
-        if (to) {
-          const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
-          await sendTemplateEmail("wholesale-decision", to, {
-            templateData: {
-              customerName: profile?.full_name ?? details?.contact_name ?? undefined,
-              businessName: details?.business_name ?? undefined,
-              approved: data.status === "approved",
-            },
-            idempotencyKey: `wholesale-decision-${data.applicationId}-${data.status}`,
-          });
-        }
+        const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+        const templateData = {
+          customerName: profile?.full_name ?? details?.contact_name ?? undefined,
+          businessName: details?.business_name ?? undefined,
+          approved: data.status === "approved",
+        };
+        await Promise.allSettled([
+          to
+            ? sendTemplateEmail("wholesale-decision", to, {
+                templateData,
+                idempotencyKey: `wholesale-decision-${data.applicationId}-${data.status}`,
+              })
+            : Promise.resolve(null),
+          // Store copy so the decision is on record in the shop inbox too.
+          sendTemplateEmail("wholesale-decision", "turpoclothes@gmail.com", {
+            templateData: { ...templateData, storeCopy: true, accountEmail: to },
+            idempotencyKey: `wholesale-decision-store-${data.applicationId}-${data.status}`,
+          }),
+        ]);
       } catch (error) {
         console.error("wholesale decision email failed", error);
       }
