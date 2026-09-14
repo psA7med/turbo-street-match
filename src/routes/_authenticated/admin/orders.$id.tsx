@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getAdminOrder, saveAdminFulfillment, updateAdminOrder } from "@/lib/admin.functions";
+import { getAdminOrder, saveAdminFulfillment, sendAdminOrderUpdate, updateAdminOrder } from "@/lib/admin.functions";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AdminPageHeader, Panel, StatusPill, TableScroller, TableState, Td, Th, dateOnly, dateTime, fulfillmentLabels, money, paymentLabels, toneForFulfillment, toneForPayment } from "@/components/admin/ui";
 
@@ -20,7 +20,10 @@ function Page() {
   const load = useServerFn(getAdminOrder);
   const update = useServerFn(updateAdminOrder);
   const saveShipment = useServerFn(saveAdminFulfillment);
+  const sendUpdate = useServerFn(sendAdminOrderUpdate);
   const [busy, setBusy] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [message, setMessage] = useState("");
   const [cancelOpen, setCancelOpen] = useState(false);
   const [reason, setReason] = useState("");
   const query = useQuery({ queryKey: ["admin-order", id], queryFn: () => load({ data: { id } }), retry: false });
@@ -65,6 +68,23 @@ function Page() {
     const form = new FormData(event.currentTarget);
     void run(() => update({ data: { id, note: String(form.get("note") ?? "") } }), "اتحفظت الملاحظة");
   };
+
+  const notifyCustomer = async () => {
+    setSending(true);
+    try {
+      const result = await sendUpdate({ data: { id, message: message.trim() } });
+      setMessage("");
+      toast.success(result.customer ? "اتبعت الإيميل للعميل" : "الإيميل مش اتسلم للعميل", {
+        description: result.store ? "ووصلت نسخة لبريد المتجر." : "راجع بريد العميل وحاول تاني.",
+      });
+    } catch (error) {
+      const missing = error instanceof Error && error.message.includes("no_recipient");
+      toast.error(missing ? "الطلب مش فيه بريد للعميل" : "تعذر إرسال الإيميل");
+    } finally {
+      setSending(false);
+    }
+  };
+
 
   return (
     <>
@@ -115,6 +135,18 @@ function Page() {
                   <label className="grid gap-1.5 text-xs font-bold">تاريخ التسليم المتوقع<Input name="eta" type="date" defaultValue={shipment?.estimated_delivery_date ?? ""} className="h-9" /></label>
                   <div className="md:col-span-2"><Button type="submit" size="sm" disabled={busy}>{busy ? "جاري الحفظ…" : "حفظ بيانات الشحن"}</Button></div>
                 </form>
+              </Panel>
+
+              <Panel title="إبلاغ العميل بالبريد">
+                <div className="grid gap-3 p-4">
+                  <p className="text-xs text-muted-foreground">
+                    يبعت للعميل الحالة الحالية ({fulfillmentLabels[order.fulfillment_status] ?? order.fulfillment_status}) وبيانات الشحن، ونسخة توصل لبريد المتجر.
+                  </p>
+                  <label className="grid gap-1.5 text-xs font-bold" htmlFor="order-message">رسالة إضافية للعميل (اختياري)</label>
+                  <Textarea id="order-message" rows={3} maxLength={600} value={message} onChange={(event) => setMessage(event.target.value)} placeholder="مثال: الشحنة خرجت من المخزن وهتوصلك بكرة." />
+                  <Button size="sm" disabled={sending} onClick={() => void notifyCustomer()}>{sending ? "جاري الإرسال…" : "إرسال التحديث للعميل"}</Button>
+                  <p dir="ltr" className="text-start text-xs text-muted-foreground">{order.guest_email || "—"}</p>
+                </div>
               </Panel>
 
               <Panel title="ملاحظة الطلب">

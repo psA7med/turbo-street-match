@@ -12,6 +12,9 @@ export interface OrderStatusProps {
   trackingNumber?: string
   eta?: string
   total?: number
+  /** Store-inbox copy of the same update. */
+  storeCopy?: boolean
+  email?: string
 }
 
 const money = (value?: number) => `${(value ?? 0).toLocaleString('ar-EG')} جنيه`
@@ -25,8 +28,12 @@ const row = (label: string, value?: string, ltr = false) => value ? (
 function OrderStatusEmail(props: OrderStatusProps) {
   return (
     <EmailLayout preview={`تحديث على طلبك #${props.orderNumber ?? ''} — ${props.statusLabel ?? ''}`}>
-      <Heading style={emailStyles.heading}>تحديث على طلبك</Heading>
-      <Text style={emailStyles.text}>أهلًا {props.customerName ?? 'بيك'}، حالة طلبك اتغيرت.</Text>
+      <Heading style={emailStyles.heading}>{props.storeCopy ? 'نسخة إدارية — تحديث طلب' : 'تحديث على طلبك'}</Heading>
+      <Text style={emailStyles.text}>
+        {props.storeCopy
+          ? `تم إرسال تحديث لطلب ${props.customerName ?? 'العميل'}${props.email ? ` (${props.email})` : ''}.`
+          : `أهلًا ${props.customerName ?? 'بيك'}، حالة طلبك اتغيرت.`}
+      </Text>
 
       <Section style={statusBox}>
         <Text style={{ color: '#737373', fontSize: '12px', margin: 0 }}>رقم الطلب</Text>

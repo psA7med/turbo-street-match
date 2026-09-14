@@ -51,17 +51,25 @@ async function orderRecipient(db: any, order: any): Promise<string | null> {
   return data?.user?.email ?? null;
 }
 
-// Emails the customer whenever something they should see changes on an order.
-async function notifyOrderUpdate(db: any, orderId: string, note?: string | null) {
+const STORE_INBOX = "turpoclothes@gmail.com";
+
+// Emails the customer (and a copy to the store inbox) whenever something they
+// should see changes on an order. `tag` keeps repeated manual sends distinct.
+async function notifyOrderUpdate(
+  db: any,
+  orderId: string,
+  note?: string | null,
+  tag?: string
+): Promise<{ customer: boolean; store: boolean; recipient: string | null }> {
+  let recipient: string | null = null;
   try {
     const { data: order } = await db
       .from("orders")
       .select("id,order_number,grand_total,fulfillment_status,guest_email,user_id,shipping_address,payments(status),fulfillments(carrier,tracking_number,estimated_delivery_date)")
       .eq("id", orderId)
       .maybeSingle();
-    if (!order) return;
-    const to = await orderRecipient(db, order);
-    if (!to) return;
+    if (!order) return { customer: false, store: false, recipient: null };
+    recipient = await orderRecipient(db, order);
     let name = (order.shipping_address as any)?.recipient_name ?? undefined;
     if (!name && order.user_id) {
       const { data: profile } = await db.from("profiles").select("full_name").eq("id", order.user_id).maybeSingle();
@@ -69,25 +77,56 @@ async function notifyOrderUpdate(db: any, orderId: string, note?: string | null)
     }
     const shipment = (order.fulfillments ?? [])[0] ?? {};
     const payment = (order.payments ?? [])[0] ?? {};
+    const templateData = {
+      orderNumber: order.order_number,
+      customerName: name,
+      statusLabel: fulfillmentText[order.fulfillment_status] ?? order.fulfillment_status,
+      statusNote: note ?? undefined,
+      paymentLabel: paymentText[payment.status] ?? undefined,
+      carrier: shipment.carrier ?? undefined,
+      trackingNumber: shipment.tracking_number ?? undefined,
+      eta: shipment.estimated_delivery_date ?? undefined,
+      total: Number(order.grand_total ?? 0),
+    };
+    const key = tag ?? `${order.fulfillment_status}-${payment.status ?? "none"}-${shipment.tracking_number ?? "none"}`;
     const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
-    await sendTemplateEmail("order-status", to, {
-      templateData: {
-        orderNumber: order.order_number,
-        customerName: name,
-        statusLabel: fulfillmentText[order.fulfillment_status] ?? order.fulfillment_status,
-        statusNote: note ?? undefined,
-        paymentLabel: paymentText[payment.status] ?? undefined,
-        carrier: shipment.carrier ?? undefined,
-        trackingNumber: shipment.tracking_number ?? undefined,
-        eta: shipment.estimated_delivery_date ?? undefined,
-        total: Number(order.grand_total ?? 0),
-      },
-      idempotencyKey: `order-status-${orderId}-${order.fulfillment_status}-${payment.status ?? "none"}-${shipment.tracking_number ?? "none"}`,
-    });
+    const [customerSend, storeSend] = await Promise.allSettled([
+      recipient
+        ? sendTemplateEmail("order-status", recipient, {
+            templateData,
+            idempotencyKey: `order-status-${orderId}-${key}`,
+          })
+        : Promise.resolve({ sent: false as const }),
+      sendTemplateEmail("order-status", STORE_INBOX, {
+        templateData: { ...templateData, storeCopy: true, email: recipient ?? undefined },
+        idempotencyKey: `order-status-store-${orderId}-${key}`,
+      }),
+    ]);
+    return {
+      customer: customerSend.status === "fulfilled" && customerSend.value.sent === true,
+      store: storeSend.status === "fulfilled" && storeSend.value.sent === true,
+      recipient,
+    };
   } catch (error) {
     console.error("order status email failed", error);
+    return { customer: false, store: false, recipient };
   }
 }
+
+// Lets the admin send the current order status (with an optional message) to
+// the customer on demand, with a copy to the store inbox.
+export const sendAdminOrderUpdate = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string; message?: string }) => {
+    if (!input?.id) throw new Error("invalid_input");
+    return { id: input.id, message: String(input.message ?? "").slice(0, 600) };
+  })
+  .handler(async ({ data, context }) => {
+    const db = await adminClient(context);
+    const result = await notifyOrderUpdate(db, data.id, clean(data.message), `manual-${Date.now()}`);
+    if (!result.recipient) throw new Error("no_recipient");
+    return result;
+  });
 
 /* ------------------------------- dashboard ------------------------------- */
 
