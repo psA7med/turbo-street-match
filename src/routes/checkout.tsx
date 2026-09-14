@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { money } from "@/components/storefront/catalog";
 import { clearCart, useCart } from "@/lib/cart";
 import { notifyOrderPlaced } from "@/lib/order-notification.functions";
+import { startTurboOverlay } from "@/components/storefront/page-transition";
 import { supabase } from "@/integrations/supabase/client";
 
 type OrderResult={order_id:string;order_number:string;subtotal:number;shipping:number;total:number};
@@ -47,8 +48,9 @@ function Page(){
     if(!fields.email.trim()){toast.error("اكتب بريدك الإلكتروني",{description:"هنبعت عليه تأكيد الطلب."});return;}
     if(!selectedZone){toast.error("اختار محافظة متاحة للشحن");return;}
     setIsSubmitting(true);
+    const stopOverlay=startTurboOverlay();
     const {data,error}=await supabase.rpc("place_retail_order",{p_customer_name:fields.customerName.trim(),p_phone:fields.phone,p_email:fields.email.trim(),p_governorate:fields.governorate,p_city:fields.city.trim(),p_street_address:fields.streetAddress.trim(),p_landmark:fields.landmark.trim(),p_items:lines.map(line=>({variant_id:line.variantId,quantity:line.quantity}))});
-    if(error){setIsSubmitting(false);const unavailable=error.message.includes("insufficient_stock")||error.message.includes("variant_unavailable");toast.error(unavailable?"قطعة في طلبك لم تعد متاحة":"تعذر تأكيد الطلب",{description:unavailable?"ارجع للسلة وحدّث اختياراتك.":"راجع البيانات وحاول مرة أخرى."});return;}
+    if(error){stopOverlay();setIsSubmitting(false);const unavailable=error.message.includes("insufficient_stock")||error.message.includes("variant_unavailable");toast.error(unavailable?"قطعة في طلبك لم تعد متاحة":"تعذر تأكيد الطلب",{description:unavailable?"ارجع للسلة وحدّث اختياراتك.":"راجع البيانات وحاول مرة أخرى."});return;}
     const result=data as unknown as OrderResult;
     try {
       await notifyOrderPlaced({data:{orderId:result.order_id}});
@@ -59,7 +61,9 @@ function Page(){
     clearCart();
     setOrder(result);
     window.scrollTo({top:0,behavior:"smooth"});
+    stopOverlay();
   };
+
 
   if(order)return <div className="turbo-container section-space min-h-[65vh]"><div className="mx-auto max-w-2xl rounded-[12px] border border-border bg-card p-6 text-center sm:p-10"><CheckCircle2 className="mx-auto size-14 text-primary"/><p className="eyebrow mt-6">تم استلام طلبك</p><h1 className="mt-3 text-3xl font-bold sm:text-5xl">طلبك دخل الملعب.</h1><p className="mt-4 leading-8 text-muted-foreground">هنراجع الطلب ونتواصل معاك على رقم الموبايل لتأكيد التوصيل.</p><div className="mt-8 rounded-[10px] bg-off-white p-5"><span className="text-sm text-muted-foreground">رقم الطلب</span><strong dir="ltr" className="mt-1 block text-2xl">#{order.order_number}</strong><div className="mt-4 flex justify-between border-t border-border pt-4"><span>الإجمالي</span><strong>{money(order.total)}</strong></div></div><div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row"><Button asChild size="lg"><Link to="/shop">كمّل تسوق</Link></Button><Button asChild size="lg" variant="outline"><Link to="/">الرئيسية</Link></Button></div></div></div>;
   if(!lines.length)return <div className="turbo-container section-space min-h-[60vh] text-center"><PackageCheck className="mx-auto size-12 text-primary"/><h1 className="mt-4 text-3xl font-bold">ابدأ بالسلة</h1><p className="mt-2 text-muted-foreground">أضف قطعك ومقاساتك قبل إتمام الطلب.</p><Button asChild className="mt-6"><Link to="/shop">المتجر</Link></Button></div>;

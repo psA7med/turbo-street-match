@@ -1,14 +1,19 @@
 import { useState, type FormEvent } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, ChevronLeft, CircleUserRound, Home, ImagePlus, LoaderCircle, LogOut, MapPin, Package, Pencil, Plus, ShieldCheck, Store, Trash2, UserRound } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { Check, ChevronLeft, CircleUserRound, Home, ImagePlus, LoaderCircle, LogOut, MapPin, Package, Pencil, Plus, ShieldCheck, Store, Trash2, UserRound, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { money } from "@/components/storefront/catalog";
+import { cancelMyOrder } from "@/lib/order-cancel.functions";
+import { withTurboOverlay } from "@/components/storefront/page-transition";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/account")({
@@ -30,17 +35,43 @@ const statusLabel = { pending: "قيد المراجعة", confirmed: "تم ال�
 type Address = { id: string; label: string | null; recipient_name: string; phone: string; governorate: string; city: string; street_address: string; building_details: string | null; landmark: string | null; is_default: boolean };
 const emptyAddress = { label: "المنزل", recipient_name: "", phone: "", governorate: "", city: "", street_address: "", building_details: "", landmark: "", is_default: false };
 const SIZE_OPTIONS = ["S", "M", "L", "XL", "2XL", "3XL", "4XL"] as const;
+// بعد الشحن مبقاش ينفع الإلغاء من الحساب
+const CANCELLABLE_STATUSES = ["pending", "confirmed", "processing"];
 
 function Page() {
   const { user } = Route.useRouteContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const cancelOrder = useServerFn(cancelMyOrder);
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingAddress, setSavingAddress] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [sizeChoice, setSizeChoice] = useState<string | null>(null);
   const [addressForm, setAddressForm] = useState<typeof emptyAddress & { id?: string } | null>(null);
+  const [cancelTarget, setCancelTarget] = useState<{ id: string; order_number: string } | null>(null);
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelling, setCancelling] = useState(false);
+
+  const submitCancel = async () => {
+    if (!cancelTarget || cancelReason.trim().length < 3) return;
+    setCancelling(true);
+    try {
+      await withTurboOverlay(() => cancelOrder({ data: { orderId: cancelTarget.id, reason: cancelReason.trim() } }));
+      await queryClient.invalidateQueries({ queryKey: ["my-orders", user.id] });
+      setCancelTarget(null);
+      setCancelReason("");
+      toast.success("تم إلغاء الطلب", { description: "بعتنالك إيميل بالتأكيد ووصل إشعار للمتجر." });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "";
+      toast.error(message.includes("not_cancellable") ? "الطلب اتشحن بالفعل" : "تعذر إلغاء الطلب", {
+        description: message.includes("not_cancellable") ? "كلّمنا لو محتاج مساعدة في الطلب." : "حاول تاني بعد لحظات.",
+      });
+    } finally {
+      setCancelling(false);
+    }
+  };
+
 
   const googleName = typeof user.user_metadata['full_name'] === "string" ? user.user_metadata['full_name'] : typeof user.user_metadata['name'] === "string" ? user.user_metadata['name'] : "";
   const googleAvatar = typeof user.user_metadata['avatar_url'] === "string" ? user.user_metadata['avatar_url'] : typeof user.user_metadata['picture'] === "string" ? user.user_metadata['picture'] : "";
@@ -284,16 +315,26 @@ function Page() {
                     <p className="mt-1 text-sm text-muted-foreground">{new Date(o.created_at).toLocaleDateString("ar-EG", { day: "numeric", month: "long", year: "numeric" })}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-4">
                   <div className="text-end">
                     <strong>{money(o.grand_total)}</strong>
                     <p className="mt-1 text-sm font-semibold text-primary">{statusLabel[o.fulfillment_status] ?? o.fulfillment_status}</p>
                   </div>
+                  {CANCELLABLE_STATUSES.includes(o.fulfillment_status) ? (
+                    <Button size="sm" variant="outline" onClick={() => { setCancelTarget({ id: o.id, order_number: o.order_number }); setCancelReason(""); }}>
+                      <XCircle /> إلغاء الطلب
+                    </Button>
+                  ) : o.fulfillment_status === "cancelled" ? null : (
+                    <Button size="sm" variant="outline" disabled title="الطلب اتشحن — الإلغاء مش متاح">
+                      <XCircle /> إلغاء الطلب
+                    </Button>
+                  )}
                   <ChevronLeft className="size-4 text-muted-foreground" aria-hidden="true" />
                 </div>
               </div>
             ))}
           </div>
+
         ) : (
           <div className="mt-5 grid place-items-center gap-4 rounded-[10px] border border-dashed p-10 text-center">
             <span className="grid size-14 place-items-center rounded-full bg-primary/10 text-primary"><Package className="size-6" /></span>
@@ -306,7 +347,25 @@ function Page() {
         )}
       </section></TabsContent>
         </Tabs>
+
+        <Dialog open={Boolean(cancelTarget)} onOpenChange={(open) => { if (!open) { setCancelTarget(null); setCancelReason(""); } }}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>إلغاء الطلب {cancelTarget ? `#${cancelTarget.order_number}` : ""}؟</DialogTitle>
+              <DialogDescription>اكتب سبب الإلغاء — هيوصلك إيميل بالتأكيد وهيوصل إشعار للمتجر.</DialogDescription>
+            </DialogHeader>
+            <label className="grid gap-2 text-sm font-bold" htmlFor="my-cancel-reason">سبب الإلغاء *</label>
+            <Textarea id="my-cancel-reason" rows={3} value={cancelReason} onChange={(event) => setCancelReason(event.target.value)} placeholder="مثال: غيّرت رأيي / اخترت مقاس غلط" />
+            <DialogFooter>
+              <Button variant="outline" size="sm" onClick={() => setCancelTarget(null)}>رجوع</Button>
+              <Button size="sm" disabled={cancelling || cancelReason.trim().length < 3} onClick={() => void submitCancel()}>
+                {cancelling ? <LoaderCircle className="animate-spin" /> : <XCircle />} تأكيد الإلغاء
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
+
   );
 }
