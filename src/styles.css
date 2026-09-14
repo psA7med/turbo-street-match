@@ -410,4 +410,11 @@
   }
 }
 
+/* هذا الانتقال مطلوب صراحةً للتنقل، فلا تلغيه إعدادات تقليل الحركة في الجهاز. */
+@media (prefers-reduced-motion: reduce) {
+  .turbo-nav-transition:not([data-state="idle"]) .turbo-nav-transition-logo {
+    animation: turbo-nav-logo 650ms linear both !important;
+  }
+}
+
 
