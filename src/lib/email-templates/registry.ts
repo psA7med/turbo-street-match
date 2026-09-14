@@ -1,8 +1,10 @@
 import type { ComponentType } from 'react'
 import { template as orderNotificationTemplate } from './order-notification'
 import { template as orderConfirmationTemplate } from './order-confirmation'
+import { template as orderStatusTemplate } from './order-status'
 import { template as wholesaleApplicationTemplate } from './wholesale-application'
 import { template as wholesaleApplicationConfirmationTemplate } from './wholesale-application-confirmation'
+import { template as wholesaleDecisionTemplate } from './wholesale-decision'
 
 export interface TemplateEntry {
   component: ComponentType<any>
