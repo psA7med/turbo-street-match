@@ -17,7 +17,7 @@ export function PageTransition() {
   const lastPathRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
-    lastPathRef.current = router.state.location.pathname;
+    lastPathRef.current = window.location.pathname;
 
     const finish = () => {
       activeRef.current = false;
