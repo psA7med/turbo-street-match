@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import mark from "@/assets/turbo-mark.svg.asset.json";
 import { ProductCard, useCatalogProducts } from "@/components/storefront/catalog";
 import { Spotlight } from "@/components/ui/spotlight";
+import { HalftoneFlow } from "@/components/ui/halftone-flow";
 import { supabase } from "@/integrations/supabase/client";
+import darkLogo from "@/assets/turbo-logo-dark.svg.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
@@ -26,7 +28,6 @@ function Index() {
   const hero=sections.find(section=>section.section_key==="hero");
   const campaign=sections.find(section=>section.section_key==="campaign");
   const story=sections.find(section=>section.section_key==="story");
-  const heroImage=hero?.image_url??products.flatMap(product=>product.product_images).sort((a,b)=>a.sort_order-b.sort_order)[0]?.url;
   const newProducts=products.filter(product=>product.is_new).slice(0,4);
   const bestsellers=products.filter(product=>product.is_bestseller).slice(0,4);
   const arrivals=newProducts.length?newProducts:products.slice(0,4);
@@ -34,15 +35,17 @@ function Index() {
   return (
     <>
       <section className="relative min-h-[32rem] overflow-hidden bg-brand-black text-primary-foreground sm:min-h-[36rem] lg:min-h-[40rem]">
-        {heroImage?<img src={heroImage} alt={hero?.title_ar??"ملابس TURBO الرياضية"} className="absolute inset-0 size-full object-cover object-center opacity-65"/>:<><div className="brand-grid absolute inset-0 opacity-20"/><img src={mark.url} alt="" aria-hidden className="absolute -start-8 bottom-0 w-[52vw] max-w-xl opacity-10"/></>}
-        <div className="absolute inset-0 bg-[linear-gradient(to_left,var(--surface-dark)_0%,color-mix(in_oklab,var(--surface-dark)_72%,transparent)_48%,color-mix(in_oklab,var(--surface-dark)_18%,transparent)_100%)]"/>
-        <div className="turbo-container relative grid min-h-[32rem] content-center py-16 sm:min-h-[36rem] lg:min-h-[40rem] lg:grid-cols-12">
-          <div className="reveal max-w-2xl lg:col-span-7">
-            <p className="eyebrow mb-4">{hero?.eyebrow_ar??"مصممة للحركة"}</p>
-            <h1 className="display-title">{hero?.title_ar??"لبس للملعب والشارع."}</h1>
-            <p className="mt-5 max-w-xl text-base leading-8 text-primary-foreground/75 md:text-lg">{hero?.body_ar??"قطع رياضية مصرية مريحة وعملية، معمولة للتمرين والمشاوير وكل يوم."}</p>
-            <div className="mt-8 flex flex-wrap gap-3"><Button asChild size="lg"><Link to="/shop">تسوّق الآن <ArrowLeft/></Link></Button><Button asChild size="lg" variant="dark-secondary"><Link to="/new">شوف الجديد</Link></Button></div>
+        <HalftoneFlow className="absolute inset-0 size-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,color-mix(in_oklab,var(--surface-dark)_18%,transparent)_42%,color-mix(in_oklab,var(--surface-dark)_72%,transparent)_100%)]"/>
+        <div className="absolute inset-x-0 top-1/2 border-t border-primary-foreground/10" aria-hidden="true"/>
+        <div className="absolute inset-y-0 left-1/2 border-l border-primary-foreground/10" aria-hidden="true"/>
+        <div className="turbo-container relative flex min-h-[32rem] flex-col items-center justify-center py-14 text-center sm:min-h-[36rem] lg:min-h-[40rem]">
+          <div className="turbo-hero-logo-wrap">
+            <img src={darkLogo.url} alt="TURBO" className="turbo-hero-logo h-auto w-[min(76vw,31rem)] object-contain" />
           </div>
+          <h1 className="sr-only">{hero?.title_ar??"TURBO ملابس رياضية مصرية للملعب والشارع"}</h1>
+          <p className="mt-8 max-w-xl text-sm font-medium leading-7 text-primary-foreground/75 sm:text-base">{hero?.body_ar??"الملعب في كل شارع."}</p>
+          <div className="mt-7 flex flex-wrap justify-center gap-3"><Button asChild size="lg"><Link to="/shop">تسوّق الآن <ArrowLeft/></Link></Button><Button asChild size="lg" variant="dark-secondary"><Link to="/new">شوف الجديد</Link></Button></div>
         </div>
       </section>
       <section className="border-b border-border bg-off-white"><div className="turbo-container grid divide-y divide-border py-2 sm:grid-cols-3 sm:divide-x sm:divide-y-0 sm:divide-x-reverse"><div className="flex min-h-14 items-center justify-center gap-3 px-4 text-sm font-semibold"><Truck className="size-5 text-primary"/>توصيل لكل مصر</div><div className="flex min-h-14 items-center justify-center gap-3 px-4 text-sm font-semibold"><RefreshCcw className="size-5 text-primary"/>استبدال سهل</div><div className="flex min-h-14 items-center justify-center gap-3 px-4 text-sm font-semibold"><ShieldCheck className="size-5 text-primary"/>دفع آمن وموثوق</div></div></section>
