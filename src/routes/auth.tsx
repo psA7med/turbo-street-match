@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { BadgeCheck, CheckCircle2, LoaderCircle, Lock, MailCheck, Package, Phone, Store, UserRound } from "lucide-react";
+import { BadgeCheck, CheckCircle2, KeyRound, LoaderCircle, Lock, MailCheck, Package, Phone, Store, UserRound } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/turbo-logo.svg.asset.json";
