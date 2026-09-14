@@ -11,6 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteFooter, SiteHeader } from "@/components/storefront/site-shell";
+import { PageTransition } from "@/components/storefront/page-transition";
 import { SmoothReveal } from "@/components/ui/smooth-reveal";
 
 import appCss from "../styles.css?url";
@@ -132,6 +133,7 @@ function RootComponent() {
         <main><Outlet /></main>
         {!isAdmin && <SiteFooter />}
       </div>
+      <PageTransition />
       <SmoothReveal />
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
