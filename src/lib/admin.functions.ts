@@ -27,6 +27,68 @@ const clean = (value: unknown) => {
   return text.length ? text : null;
 };
 
+const fulfillmentText: Record<string, string> = {
+  pending: "قيد الانتظار",
+  confirmed: "تم التأكيد",
+  processing: "تحت التجهيز",
+  shipped: "تم الشحن — في الطريق",
+  delivered: "تم التسليم",
+  cancelled: "تم إلغاء الطلب",
+};
+const paymentText: Record<string, string> = {
+  pending: "في انتظار الدفع",
+  paid: "مدفوع",
+  failed: "فشل الدفع",
+  refunded: "تم الاسترجاع",
+  cod: "الدفع عند الاستلام",
+};
+
+// Resolves the customer's email for an order (guest email or account email).
+async function orderRecipient(db: any, order: any): Promise<string | null> {
+  if (order?.guest_email) return order.guest_email as string;
+  if (!order?.user_id) return null;
+  const { data } = await db.auth.admin.getUserById(order.user_id);
+  return data?.user?.email ?? null;
+}
+
+// Emails the customer whenever something they should see changes on an order.
+async function notifyOrderUpdate(db: any, orderId: string, note?: string | null) {
+  try {
+    const { data: order } = await db
+      .from("orders")
+      .select("id,order_number,grand_total,fulfillment_status,guest_email,user_id,shipping_address,payments(status),fulfillments(carrier,tracking_number,estimated_delivery_date)")
+      .eq("id", orderId)
+      .maybeSingle();
+    if (!order) return;
+    const to = await orderRecipient(db, order);
+    if (!to) return;
+    let name = (order.shipping_address as any)?.recipient_name ?? undefined;
+    if (!name && order.user_id) {
+      const { data: profile } = await db.from("profiles").select("full_name").eq("id", order.user_id).maybeSingle();
+      name = profile?.full_name ?? undefined;
+    }
+    const shipment = (order.fulfillments ?? [])[0] ?? {};
+    const payment = (order.payments ?? [])[0] ?? {};
+    const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+    await sendTemplateEmail("order-status", to, {
+      templateData: {
+        orderNumber: order.order_number,
+        customerName: name,
+        statusLabel: fulfillmentText[order.fulfillment_status] ?? order.fulfillment_status,
+        statusNote: note ?? undefined,
+        paymentLabel: paymentText[payment.status] ?? undefined,
+        carrier: shipment.carrier ?? undefined,
+        trackingNumber: shipment.tracking_number ?? undefined,
+        eta: shipment.estimated_delivery_date ?? undefined,
+        total: Number(order.grand_total ?? 0),
+      },
+      idempotencyKey: `order-status-${orderId}-${order.fulfillment_status}-${payment.status ?? "none"}-${shipment.tracking_number ?? "none"}`,
+    });
+  } catch (error) {
+    console.error("order status email failed", error);
+  }
+}
+
 /* ------------------------------- dashboard ------------------------------- */
 
 export const getAdminOverview = createServerFn({ method: "GET" })
