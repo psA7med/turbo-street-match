@@ -14,18 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      __diag: {
-        Row: {
-          txt: string | null
-        }
-        Insert: {
-          txt?: string | null
-        }
-        Update: {
-          txt?: string | null
-        }
-        Relationships: []
-      }
       addresses: {
         Row: {
           building_details: string | null
