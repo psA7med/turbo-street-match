@@ -332,36 +332,6 @@
 }
 
 /* انتقال القائمة العلوية: الشعار يدخل من الشمال بسرعة، يقرب من الشاشة ويهدأ، ثم يخرج لليمين */
-.turbo-nav-transition {
-  position: fixed;
-  inset: 0;
-  z-index: 101;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  background: transparent;
-  pointer-events: none;
-  visibility: hidden;
-}
-
-.turbo-nav-transition:not([data-state="idle"]) {
-  visibility: visible;
-}
-
-.turbo-nav-transition-logo {
-  width: clamp(9rem, 34vw, 20rem);
-  height: auto;
-  object-fit: contain;
-  will-change: transform, opacity;
-}
-
-.turbo-nav-transition-logo {
-  opacity: 0;
-}
-
-.turbo-nav-transition:not([data-state="idle"]) .turbo-nav-transition-logo {
-  animation: turbo-nav-logo 650ms linear both;
-}
 
 @keyframes blur-out-up {
   from { opacity: 0; filter: blur(10px); transform: translateY(24px) scale(.99); }
@@ -386,35 +356,6 @@
 @keyframes turbo-mark-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: .72; transform: scale(.94); }
-}
-
-@keyframes turbo-nav-logo {
-  0% {
-    opacity: 0;
-    transform: translateX(-46vw) scale(0.55);
-    animation-timing-function: cubic-bezier(.16, .84, .3, 1);
-  }
-  30% {
-    opacity: 1;
-    transform: translateX(-4vw) scale(1.16);
-    animation-timing-function: cubic-bezier(.4, 0, .6, 1);
-  }
-  62% {
-    opacity: 1;
-    transform: translateX(3vw) scale(1.22);
-    animation-timing-function: cubic-bezier(.7, 0, .84, .16);
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(48vw) scale(0.6);
-  }
-}
-
-/* هذا الانتقال مطلوب صراحةً للتنقل، فلا تلغيه إعدادات تقليل الحركة في الجهاز. */
-@media (prefers-reduced-motion: reduce) {
-  .turbo-nav-transition:not([data-state="idle"]) .turbo-nav-transition-logo {
-    animation: turbo-nav-logo 650ms linear both !important;
-  }
 }
 
 

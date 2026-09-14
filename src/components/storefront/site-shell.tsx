@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { ChevronDown, Heart, LogIn, Menu, Search, ShoppingBag, Store, UserRound } from "lucide-react";
 import { useWishlist } from "@/hooks/use-wishlist";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,6 @@ import darkLogo from "@/assets/turbo-logo-dark.svg.asset.json";
 import mark from "@/assets/turbo-mark.svg.asset.json";
 import { useCart } from "@/lib/cart";
 import { supabase } from "@/integrations/supabase/client";
-import { startNavTransition } from "@/components/storefront/page-transition";
 
 const links = [
   ["المتجر", "/shop"], ["الفئات", "/categories"], ["وصل جديد", "/new"],
@@ -43,16 +42,11 @@ function useAccountState() {
 }
 
 function NavLink({ label, to }: { label: string; to: string }) {
-  const navigate = useNavigate();
   return (
     <Link
       to={to}
       className="transition-colors duration-150 hover:text-primary"
       activeProps={{ className: "text-primary" }}
-      onClick={(e) => {
-        e.preventDefault();
-        startNavTransition(() => navigate({ to }));
-      }}
     >
       {label}
     </Link>
@@ -60,16 +54,11 @@ function NavLink({ label, to }: { label: string; to: string }) {
 }
 
 function SheetNavLink({ label, to, onClick, className }: { label: string; to: string; onClick?: () => void; className?: string }) {
-  const navigate = useNavigate();
   return (
     <Link
       to={to}
       className={className ?? "border-b border-border py-4 text-lg font-semibold"}
-      onClick={(e) => {
-        e.preventDefault();
-        onClick?.();
-        startNavTransition(() => navigate({ to }));
-      }}
+      onClick={() => onClick?.()}
     >
       {label}
     </Link>
