@@ -69,6 +69,23 @@ function Page() {
     void run(() => update({ data: { id, note: String(form.get("note") ?? "") } }), "اتحفظت الملاحظة");
   };
 
+  const notifyCustomer = async () => {
+    setSending(true);
+    try {
+      const result = await sendUpdate({ data: { id, message: message.trim() } });
+      setMessage("");
+      toast.success(result.customer ? "اتبعت الإيميل للعميل" : "الإيميل مش اتسلم للعميل", {
+        description: result.store ? "ووصلت نسخة لبريد المتجر." : "راجع بريد العميل وحاول تاني.",
+      });
+    } catch (error) {
+      const missing = error instanceof Error && error.message.includes("no_recipient");
+      toast.error(missing ? "الطلب مش فيه بريد للعميل" : "تعذر إرسال الإيميل");
+    } finally {
+      setSending(false);
+    }
+  };
+
+
   return (
     <>
       <AdminPageHeader
