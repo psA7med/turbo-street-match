@@ -3,7 +3,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { TIER } from "@/lib/queries";
 import { useSessionUserId } from "@/hooks/use-session-user";
-import type { CatalogProduct } from "@/components/storefront/catalog";
 import { ChevronLeft, Minus, Plus, Ruler, ShieldCheck, Truck } from "lucide-react";
 import { useWishlist } from "@/hooks/use-wishlist";
 import { toggleWishlist } from "@/lib/wishlist";
