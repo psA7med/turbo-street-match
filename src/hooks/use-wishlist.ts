@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { getLocal } from "@/lib/wishlist";
@@ -8,18 +8,20 @@ import { useSessionUserId } from "@/hooks/use-session-user";
 /** One shared wishlist query keyed by user — all mounted instances share a single request. */
 export function useWishlist() {
   const userId = useSessionUserId();
+  const queryClient = useQueryClient();
   const [localIds, setLocalIds] = useState<string[]>([]);
 
   useEffect(() => {
     const sync = () => setLocalIds(getLocal());
+    const changed = () => { sync(); void queryClient.invalidateQueries({ queryKey: ["wishlist"] }); };
     sync();
-    window.addEventListener("turbo-wishlist", sync);
+    window.addEventListener("turbo-wishlist", changed);
     window.addEventListener("storage", sync);
     return () => {
-      window.removeEventListener("turbo-wishlist", sync);
+      window.removeEventListener("turbo-wishlist", changed);
       window.removeEventListener("storage", sync);
     };
-  }, []);
+  }, [queryClient]);
 
   const { data: dbIds = [] } = useQuery({
     queryKey: ["wishlist", userId],

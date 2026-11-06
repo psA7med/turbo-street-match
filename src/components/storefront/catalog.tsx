@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { TIER, categoriesQuery } from "@/lib/queries";
 import { Link } from "@tanstack/react-router";
 import { ArrowDownUp, PackageOpen, ShoppingBag, SlidersHorizontal } from "lucide-react";
 import { useWishlist } from "@/hooks/use-wishlist";
@@ -19,7 +20,7 @@ export type CatalogProduct = {
   product_variants:{id:string;retail_price:number;compare_at_price:number|null;color_name_ar:string;color_value:string|null;size_label:string;sku:string}[];
 };
 
-export function useCatalogProducts(){return useQuery({queryKey:["catalog-products"],queryFn:async()=>{const {data,error}=await supabase.from("products").select("id,slug,name_ar,name_en,is_new,is_bestseller,category_id,product_images(url,alt_ar,sort_order),product_variants(id,retail_price,compare_at_price,color_name_ar,color_value,size_label,sku)").eq("status","published").order("created_at",{ascending:false});if(error)throw error;return (data??[]) as CatalogProduct[];}})}
+export function useCatalogProducts(){return useQuery({queryKey:["catalog-products"],...TIER.catalog,queryFn:async()=>{const {data,error}=await supabase.from("products").select("id,slug,name_ar,name_en,is_new,is_bestseller,category_id,product_images(url,alt_ar,sort_order),product_variants(id,retail_price,compare_at_price,color_name_ar,color_value,size_label,sku)").eq("status","published").order("created_at",{ascending:false});if(error)throw error;return (data??[]) as CatalogProduct[];}})}
 export const money=(n:number)=>new Intl.NumberFormat("ar-EG",{style:"currency",currency:"EGP",maximumFractionDigits:0}).format(n);
 
 export function ProductCard({product,variant="default"}:{product:CatalogProduct;variant?:"default"|"shop"}){
@@ -43,7 +44,7 @@ function FilterFields({filters,setFilters,categories,sizes,colors}:{filters:Filt
 
 export function CatalogGrid(){
   const {data=[],isLoading,error}=useCatalogProducts(); const [filters,setFilters]=useState(initial);
-  const {data:categories=[]}=useQuery({queryKey:["categories"],queryFn:async()=>{const {data,error}=await supabase.from("categories").select("id,name_ar,name_en,slug").eq("status","published").order("sort_order");if(error)throw error;return data??[];}});
+  const {data:categories=[]}=useQuery(categoriesQuery());
   const sizes=useMemo(()=>Array.from(new Set(data.flatMap(p=>p.product_variants.map(v=>v.size_label)))),[data]);
   const colors=useMemo(()=>Array.from(new Set(data.flatMap(p=>p.product_variants.map(v=>v.color_name_ar)))),[data]);
   const filtered=useMemo(()=>data.filter(p=>(!filters.category||p.category_id===filters.category)&&(!filters.size||p.product_variants.some(v=>v.size_label===filters.size))&&(!filters.color||p.product_variants.some(v=>v.color_name_ar===filters.color))).sort((a,b)=>{const ap=Math.min(...a.product_variants.map(v=>v.retail_price)),bp=Math.min(...b.product_variants.map(v=>v.retail_price));return filters.sort==="low"?ap-bp:filters.sort==="high"?bp-ap:0}),[data,filters]);

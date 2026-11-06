@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { shippingZonesQuery } from "@/lib/queries";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckCircle2, CreditCard, Loader2, MapPin, PackageCheck, Truck } from "lucide-react";
 import { toast } from "sonner";
@@ -28,7 +29,7 @@ function Page(){
   const [fields,setFields]=useState(emptyFields);
   const [isSubmitting,setIsSubmitting]=useState(false);
   const [order,setOrder]=useState<OrderResult|null>(null);
-  const {data:zones=[],isLoading:zonesLoading}=useQuery({queryKey:["shipping-zones"],queryFn:async()=>{const {data,error}=await supabase.from("shipping_zones").select("id,name_ar,governorates,fee,eta_min_days,eta_max_days,cod_available").eq("active",true).order("fee");if(error)throw error;return data??[];}});
+  const {data:zones=[],isLoading:zonesLoading}=useQuery(shippingZonesQuery());
   const governorates=useMemo(()=>Array.from(new Set(zones.flatMap(zone=>zone.governorates))).sort((a,b)=>a.localeCompare(b,"ar")),[zones]);
   const selectedZone=zones.find(zone=>zone.governorates.includes(fields.governorate));
   const shipping=selectedZone?.fee??0;

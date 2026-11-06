@@ -128,6 +128,8 @@ function Page() {
 
   const { data: orders = [], isLoading: ordersLoading } = useQuery({
     queryKey: ["my-orders", user.id],
+    staleTime: 15_000,
+    refetchOnWindowFocus: true,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("orders")
