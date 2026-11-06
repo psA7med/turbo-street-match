@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { categoriesQuery, homepageSectionsQuery } from "@/lib/queries";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Quote, RefreshCcw, ShieldCheck, ShoppingBag, Star, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,8 +24,9 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { data: products=[] } = useCatalogProducts();
-  const { data: categories=[] } = useQuery({queryKey:["home-categories"],queryFn:async()=>{const {data,error}=await supabase.from("categories").select("id,slug,name_ar,description_ar,image_url").eq("status","published").order("sort_order").limit(4);if(error)throw error;return data??[];}});
-  const { data: sections=[] } = useQuery({queryKey:["homepage-sections"],queryFn:async()=>{const {data,error}=await supabase.from("homepage_sections").select("section_key,eyebrow_ar,title_ar,body_ar,image_url,cta_label_ar,cta_url,content").eq("status","published").order("sort_order");if(error)throw error;return data??[];}});
+  const { data: allCategories=[] } = useQuery(categoriesQuery());
+  const categories=allCategories.slice(0,4);
+  const { data: sections=[] } = useQuery(homepageSectionsQuery());
   const hero=sections.find(section=>section.section_key==="hero");
   const campaign=sections.find(section=>section.section_key==="campaign");
   const story=sections.find(section=>section.section_key==="story");

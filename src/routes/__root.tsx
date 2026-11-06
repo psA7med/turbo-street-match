@@ -7,9 +7,12 @@ import {
   useRouterState,
   HeadContent,
   Scripts,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { USER_KEYS } from "@/lib/queries";
 import { SiteFooter, SiteHeader } from "@/components/storefront/site-shell";
 import { PageTransition } from "@/components/storefront/page-transition";
 import { SmoothReveal } from "@/components/ui/smooth-reveal";
@@ -39,7 +42,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
@@ -125,6 +128,19 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
+
+  // Account isolation: drop previous user's cached private data on sign-out or account switch.
+  useEffect(() => {
+    let lastUser: string | null | undefined;
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      const next = session?.user.id ?? null;
+      if (event === "SIGNED_OUT" || (lastUser !== undefined && lastUser !== next)) {
+        for (const key of USER_KEYS) queryClient.removeQueries({ queryKey: [key] });
+      }
+      lastUser = next;
+    });
+    return () => sub.subscription.unsubscribe();
+  }, [queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>
